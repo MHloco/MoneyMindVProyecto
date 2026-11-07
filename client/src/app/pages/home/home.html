@@ -1,0 +1,137 @@
+<!-- NAVBAR -->
+<nav class="nav" [class.nav--scrolled]="scrolled">
+  <ul class="nav-links">
+    <li><a href="#inicio">Inicio</a></li>
+    <li><a href="#nosotros">Nosotros</a></li>
+    <li><a href="#servicios">Servicios</a></li>
+    <li><a href="#planes">Planes</a></li>
+    <li><a href="#comunidad">Comunidad</a></li>
+  </ul>
+
+  <div class="brand-zone">
+    <span class="brand">MoneyMind<em>V</em></span>
+    <button class="btn-login" (click)="goToLogin()">Iniciar sesión</button>
+  </div>
+</nav>
+
+<!-- HERO: V ROTATIVA -->
+<app-home-hero id="inicio"></app-home-hero>
+
+<!-- NOSOTROS -->
+<section class="about" id="nosotros">
+  <div class="about-grid">
+    <div class="about-text">
+      <span class="kicker">Nosotros</span>
+      <h2>Finanzas personales con <em class="gold">propósito y claridad</em></h2>
+      <p>
+        MoneyMindV nace con una convicción simple: el manejo del dinero no es solo números,
+        es una habilidad de vida. Nuestro objetivo es acompañarte a tomar el control de tus
+        finanzas con herramientas claras, educación práctica y una comunidad que te impulsa.
+      </p>
+      <p>
+        Creemos que cada persona merece entender su dinero, planificar su futuro y crecer
+        con confianza, sin complicaciones ni jerga financiera innecesaria.
+      </p>
+    </div>
+
+    <div class="about-emblem">
+      <div class="emblem-card">
+        <span class="emblem-v">V</span>
+        <span class="emblem-brand">MoneyMind<em>V</em></span>
+        <span class="emblem-tagline">Tu dinero · Tu mente · Tu futuro</span>
+      </div>
+
+      <div class="pillars">
+        <div class="pillar">
+          <span class="pillar-icon">◈</span>
+          <div>
+            <h4>Misión</h4>
+            <p>Hacer la gestión financiera accesible, clara y humana para todos.</p>
+          </div>
+        </div>
+        <div class="pillar">
+          <span class="pillar-icon">✦</span>
+          <div>
+            <h4>Visión</h4>
+            <p>Ser el aliado de confianza en el crecimiento económico personal.</p>
+          </div>
+        </div>
+        <div class="pillar">
+          <span class="pillar-icon">◇</span>
+          <div>
+            <h4>Valores</h4>
+            <p>Transparencia, educación y compromiso real con cada usuario.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SERVICIOS -->
+<section class="info" id="servicios">
+  <div class="info-head">
+    <span class="kicker">Servicios</span>
+    <h2>Todo lo que necesitas para tu <em class="gold">tranquilidad económica</em></h2>
+    <p>
+      MoneyMindV es una web de ayuda para la gestión de finanzas personales. Te acompañamos con
+      herramientas claras, métricas visuales y educación financiera práctica para que cada
+      decisión cuente.
+    </p>
+  </div>
+
+  <div class="cards">
+    <article class="card" *ngFor="let card of cards">
+      <div class="icon">{{ card.icon }}</div>
+      <h3>{{ card.title }}</h3>
+      <p>{{ card.desc }}</p>
+    </article>
+  </div>
+</section>
+
+<!-- SEPARADOR CREATIVO -->
+<div class="separator" aria-hidden="true">
+  <div class="sep-band"></div>
+  <div class="sep-band sep-band--two"></div>
+  <span class="sep-text">« Donde tu dinero encuentra su propósito »</span>
+</div>
+
+<!-- CTA / COMUNIDAD -->
+<section class="home-plans" id="planes">
+  <div class="info-head"><span class="kicker">Planes</span><h2>Empieza hoy. Crece a tu ritmo.</h2><p>Conoce los precios y límites de cada plan de MoneyMind.</p></div>
+  <p *ngIf="plansLoading" role="status">Cargando planes…</p>
+  <p *ngIf="plansError" role="alert">{{ plansError }} <button type="button" (click)="loadPlans()">Reintentar</button></p>
+  <app-plan-cards [plans]="plans" [publicView]="true" (choose)="goToLogin()"></app-plan-cards>
+  <p *ngIf="!plansLoading && !plansError && !plans.length">Los planes estarán disponibles pronto.</p>
+</section>
+
+<section class="cta" id="comunidad">
+  <h2>
+    Maneja y mejora tus finanzas para tu
+    <em>crecimiento personal</em>
+  </h2>
+  <p class="slogan">Tu dinero · Tu mente · Tu futuro</p>
+
+  <form class="cta-form" (ngSubmit)="onJoin()">
+  <input
+    type="email"
+    name="email"
+    [(ngModel)]="email"
+    placeholder="Tu correo electrónico"
+    [disabled]="loading"
+    required
+  />
+  <button type="submit" [disabled]="loading">
+    {{ loading ? 'Enviando...' : 'Únetenos' }}
+  </button>
+</form>
+
+  <p class="cta-msg" *ngIf="message">{{ message }}</p>
+  <p class="cta-note">Sin spam. Solo herramientas y sabiduría financiera.</p>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <span class="brand">MoneyMind<em>V</em></span>
+  <span>© 2026 MoneyMindV — Todos los derechos reservados</span>
+</footer>

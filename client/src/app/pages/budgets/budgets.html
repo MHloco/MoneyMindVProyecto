@@ -1,0 +1,603 @@
+<div class="dashboard-layout">
+
+  <!-- =====================================================
+       SIDEBAR LATERAL
+       ===================================================== -->
+
+  <app-sidebar></app-sidebar>
+
+  <!-- =====================================================
+       CONTENIDO PRINCIPAL
+       ===================================================== -->
+
+  <main class="main-content">
+
+<!-- CABECERA -->
+
+<header class="budgets-header">
+
+  <div>
+
+    <h1>Presupuestos</h1>
+
+    <p>
+      Controla cuánto puedes gastar y revisa
+      cómo avanzan tus gastos.
+    </p>
+
+  </div>
+
+
+  <button
+    type="button"
+    class="btn-gold"
+    (click)="toggleForm()"
+  >
+    {{ showForm ? 'Cancelar' : '+ Nuevo presupuesto' }}
+  </button>
+
+</header>
+
+
+
+<!-- =====================================================
+     FORMULARIO
+     ===================================================== -->
+
+<div
+  *ngIf="showForm"
+  class="budget-form"
+>
+
+  <div class="form-heading">
+
+    <div class="form-icon">
+      ◎
+    </div>
+
+    <div>
+
+      <h2>Nuevo presupuesto</h2>
+
+      <p>
+        Define los límites de gasto para controlar mejor
+        tus finanzas.
+      </p>
+
+    </div>
+
+  </div>
+
+
+  <div class="form-grid">
+
+
+    <!-- CATEGORÍA -->
+
+    <div class="form-group">
+
+  <label>
+    Categoría
+  </label>
+
+  <select
+    [(ngModel)]="form.categoryId"
+    [disabled]="categoriesLoading"
+  >
+
+    <option
+      value=""
+      disabled
+    >
+      {{
+        categoriesLoading
+          ? 'Cargando categorías...'
+          : 'Selecciona una categoría'
+      }}
+    </option>
+
+    <option
+      *ngFor="let category of categories"
+      [value]="category.id"
+    >
+
+      {{ category.name }}
+
+    </option>
+
+  </select>
+
+  <small>Solo puedes tener un presupuesto activo por categoría en las mismas fechas.</small>
+
+  <small
+    *ngIf="!categoriesLoading && !categoriesError && categories.length === 0"
+    class="field-warning"
+  >
+
+    No tienes categorías personalizadas de gastos.
+    <a routerLink="/categories">Crea una categoría de tipo Gasto primero.</a>
+
+  </small>
+
+  <div *ngIf="categoriesError" class="field-warning" role="alert">
+    {{ categoriesError }}
+    <button type="button" class="btn-cancel" (click)="loadCategories()">
+      Reintentar
+    </button>
+  </div>
+
+</div>
+
+
+
+    <!-- NOMBRE -->
+
+    <div class="form-group">
+
+      <label>
+        Nombre
+      </label>
+
+      <input
+        type="text"
+        [(ngModel)]="form.name"
+        placeholder="Ej. Alimentación mensual"
+      />
+
+    </div>
+
+
+
+    <!-- MONTO -->
+
+    <div class="form-group">
+
+      <label>
+        Presupuesto
+      </label>
+
+      <div class="input-money">
+
+        <span>S/</span>
+
+        <input
+          type="number"
+          [(ngModel)]="form.amount"
+          min="0"
+          step="0.01"
+          placeholder="0.00"
+        />
+
+      </div>
+
+    </div>
+
+
+
+    <!-- FECHA INICIO -->
+
+    <div class="form-group">
+
+      <label>
+        Inicio
+      </label>
+
+      <input
+        type="date"
+        [(ngModel)]="form.periodStart"
+      />
+
+    </div>
+
+
+
+    <!-- FECHA FIN -->
+
+    <div class="form-group">
+
+      <label>
+        Fin
+      </label>
+
+      <input
+        type="date"
+        [(ngModel)]="form.periodEnd"
+        [min]="form.periodStart"
+      />
+
+    </div>
+
+
+
+    <!-- UMBRAL -->
+
+    <div class="form-group">
+
+      <label>
+        Umbral de alerta
+      </label>
+
+      <input
+        type="number"
+        [(ngModel)]="form.alertThreshold"
+        min="0.01"
+        max="1"
+        step="0.05"
+      />
+
+      <small>
+        0.80 = alerta al utilizar el 80%.
+      </small>
+
+    </div>
+
+  </div>
+
+
+
+  <div *ngIf="conflictingBudget as conflict" class="error-message" role="alert">
+    Ya tienes el presupuesto «{{ conflict.name }}» en esta categoría,
+    del {{ formatDate(conflict.periodStart) }} al {{ formatDate(conflict.periodEnd) }}.
+    Elige otra categoría o fechas que no se crucen con ese período.
+    <a routerLink="/categories">Crear otra categoría</a>
+  </div>
+
+  <!-- ROLLOVER -->
+
+  <div class="rollover-option">
+
+    <label>
+
+      <input
+        type="checkbox"
+        [(ngModel)]="form.rollover"
+      />
+
+      <span>
+        Permitir rollover
+      </span>
+
+    </label>
+
+  </div>
+
+
+
+  <!-- ERROR -->
+
+  <p
+    *ngIf="errorMessage"
+    class="error-message"
+  >
+    ⚠ {{ errorMessage }}
+  </p>
+
+
+
+  <!-- ACCIONES -->
+
+  <div class="form-actions">
+
+    <button
+      type="button"
+      class="btn-cancel"
+      (click)="showForm = false"
+    >
+      Cancelar
+    </button>
+
+
+    <button
+      type="button"
+      class="btn-gold"
+      (click)="createBudget()"
+    >
+      Guardar presupuesto
+    </button>
+
+  </div>
+
+</div>
+
+
+
+<!-- =====================================================
+     CARGANDO
+     ===================================================== -->
+
+<div
+  *ngIf="loading"
+  class="state-card loading"
+>
+
+  <div class="spinner"></div>
+
+  <p>
+    Cargando presupuestos...
+  </p>
+
+</div>
+
+
+
+<!-- =====================================================
+     SIN PRESUPUESTOS
+     ===================================================== -->
+
+<div
+  *ngIf="
+    !loading &&
+    budgets.length === 0
+  "
+  class="state-card empty"
+>
+
+  <span class="empty-icon">
+    ◎
+  </span>
+
+  <h3>
+    No tienes presupuestos registrados
+  </h3>
+
+  <p>
+    Crea tu primer presupuesto para comenzar
+    a controlar tus gastos.
+  </p>
+
+</div>
+
+
+
+<!-- =====================================================
+     TABLA
+     ===================================================== -->
+
+<div
+  *ngIf="
+    !loading &&
+    budgets.length > 0
+  "
+  class="budgets-table-container"
+>
+
+
+  <!-- CABECERA DE LA TABLA -->
+
+  <div class="table-heading">
+
+    <div>
+
+      <h2>
+        Mis presupuestos
+      </h2>
+
+      <p>
+        Controla el avance de tus límites de gasto.
+      </p>
+
+    </div>
+
+
+    <span class="budget-counter">
+
+      {{ budgets.length }}
+
+      {{ budgets.length === 1
+        ? 'presupuesto'
+        : 'presupuestos'
+      }}
+
+    </span>
+
+  </div>
+
+
+
+  <!-- TABLA -->
+
+  <div class="table-scroll">
+
+    <table class="gold-table">
+
+      <thead>
+
+        <tr>
+
+          <th>
+            Presupuesto
+          </th>
+
+          <th>
+            Categoría
+          </th>
+
+          <th>
+            Presupuesto
+          </th>
+
+          <th>
+            Gastado
+          </th>
+
+          <th>
+            Disponible
+          </th>
+
+          <th>
+            Progreso
+          </th>
+
+          <th>
+            Estado
+          </th>
+
+          <th>
+          </th>
+
+        </tr>
+
+      </thead>
+
+
+      <tbody>
+
+        <tr
+          *ngFor="let budget of budgets"
+        >
+
+
+          <!-- NOMBRE -->
+
+          <td class="budget-name">
+
+            <strong>
+              {{ budget.name }}
+            </strong>
+
+            <small>
+              {{ formatDate(budget.periodStart) }}
+              -
+              {{ formatDate(budget.periodEnd) }}
+            </small>
+
+          </td>
+
+
+
+          <!-- CATEGORÍA -->
+
+          <td>
+
+            <span class="category-badge">
+
+              {{ budget.categoryName || 'Sin categoría' }}
+
+            </span>
+
+          </td>
+
+
+
+          <!-- PRESUPUESTO -->
+
+          <td class="money">
+
+            <strong>
+              {{ budget.amount | number:'1.2-2' }}
+            </strong>
+
+            <small>
+              {{ budget.currency }}
+            </small>
+
+          </td>
+
+
+
+          <!-- GASTADO -->
+
+          <td class="money">
+
+            {{ budget.spent | number:'1.2-2' }}
+            {{ budget.currency }}
+
+          </td>
+
+
+
+          <!-- DISPONIBLE -->
+
+          <td
+            class="money remaining"
+            [class.negative]="budget.remaining < 0"
+          >
+
+            {{ budget.remaining | number:'1.2-2' }}
+            {{ budget.currency }}
+
+          </td>
+
+
+
+          <!-- PROGRESO -->
+
+          <td class="progress-cell">
+
+            <div class="progress">
+
+              <div
+                class="progress-bar"
+                [class.warning]="
+                  budget.percentage >= 80 &&
+                  budget.percentage <= 100
+                "
+                [class.exceeded]="
+                  budget.percentage > 100
+                "
+                [style.width.%]="
+                  budget.percentage > 100
+                    ? 100
+                    : budget.percentage
+                "
+              ></div>
+
+            </div>
+
+            <small>
+              {{ budget.percentage }}%
+            </small>
+
+          </td>
+
+
+
+          <!-- ESTADO -->
+
+          <td>
+
+            <span
+              class="status"
+              [ngClass]="
+                getStatusClass(
+                  budget.status
+                )
+              "
+            >
+
+              {{ budget.status }}
+
+            </span>
+
+          </td>
+
+
+
+          <!-- ELIMINAR -->
+
+          <td class="action-cell">
+
+            <button
+              type="button"
+              class="delete-button"
+              (click)="deleteBudget(budget)"
+              title="Eliminar presupuesto"
+            >
+              ×
+            </button>
+
+          </td>
+
+        </tr>
+
+      </tbody>
+
+    </table>
+
+  </div>
+
+</div>
+
+  </main>
+
+</div>

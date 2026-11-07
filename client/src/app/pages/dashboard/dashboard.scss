@@ -1,0 +1,38 @@
+﻿:host { display: block; min-height: 100vh; background: var(--black); color: var(--ivory); }
+* { box-sizing: border-box; }
+.main-content { margin-left: 265px; padding: 36px; max-width: 1800px; }
+.page-header, .card-header { display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap; margin-bottom: 22px; }
+h1 { font-size: 28px; } h2 { font-size: 19px; } h3 { font-size: 15px; }
+h2, h3, .subtitle, .page-header p, .eyebrow { color: var(--gold-soft); }
+.eyebrow { font-size: 11px; letter-spacing: 2px; } p, small, .card-header > span { color: #b5b0a6; }
+button, a { color: var(--gold-soft); } a { text-decoration: none; font-size: 13px; }
+button { border: 1px solid var(--line); background: transparent; border-radius: 8px; padding: 11px 16px; cursor: pointer; font: inherit; }
+button:disabled { opacity: .5; } .feedback { padding: 16px; color: #ffb4ab; }
+.summary-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 18px; margin: 24px 0; }
+.card { padding: 24px; border: 1px solid var(--line); border-radius: 14px; background: linear-gradient(145deg, #c9a24b06, var(--coal)); min-width: 0; }
+.summary-grid .card { display: grid; gap: 12px; } .summary-grid strong { font-size: clamp(20px, 2vw, 29px); font-variant-numeric: tabular-nums; }
+.summary-grid span { color: var(--gold-soft); } .summary-grid small { font-size: 12px; }
+.details-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 24px; margin: 24px 0; } .income { color: #9bcca4; }
+.empty { padding: 18px 0; line-height: 1.6; } .list-row { display: flex; justify-content: space-between; align-items: center; gap: 16px; padding: 16px 0; border-bottom: 1px solid #ffffff0c; }
+.list-row p { margin-bottom: 0; font-size: 13px; } .list-row strong { white-space: nowrap; }
+.budget { margin: 24px 0; } .budget p { font-size: 13px; } .progress { height: 7px; background: #34312a; border-radius: 20px; overflow: hidden; } .progress div { height: 100%; background: var(--gold); }
+.table-wrapper { overflow-x: auto; } table { width: 100%; border-collapse: collapse; margin-top: 18px; font-size: 13px; } th, td { padding: 14px 10px; text-align: left; border-bottom: 1px solid #ffffff0c; } th { color: var(--gold-soft); } td:last-child { white-space: nowrap; }
+summary { color: var(--gold-soft); cursor: pointer; }
+@media (max-width: 1150px) { .summary-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } .charts-grid { grid-template-columns: 1fr; } }
+@media (max-width: 850px) { .main-content { margin-left: 0; padding: 24px 16px; } }
+@media (max-width: 550px) { .details-grid, .summary-grid { grid-template-columns: 1fr; } .card { padding: 18px; } .bar-chart { gap: 3px; } .list-row { flex-wrap: wrap; } }
+.toolbar, .month-picker, .range-selector, .movement-filters, .pagination { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+.toolbar { justify-content: space-between; padding: 18px; border: 1px solid var(--line); border-radius: 12px; background: var(--coal); }
+label { display: grid; gap: 6px; color: var(--gold-soft); font-size: 12px; }
+input, select { color-scheme: dark; font: inherit; font-size: 14px; color: var(--ivory); background: #191817; border: 1px solid var(--line); border-radius: 8px; padding: 10px; }
+button[aria-pressed=true], button:hover:not(:disabled) { border-color: var(--gold); background: #c9a24b18; }
+button:focus-visible, input:focus-visible, select:focus-visible, .movements:focus-visible { outline: 2px solid var(--gold-soft); outline-offset: 3px; }
+button:disabled { cursor: default; }
+.metric-button { text-align: left; color: var(--ivory); transition: border-color .2s, transform .2s; }
+.metric-button:hover:not(:disabled) { transform: translateY(-3px); }
+.period-note { font-size: 13px; line-height: 1.6; }
+.movements { margin-top: 24px; scroll-margin-top: 20px; }
+.pagination { justify-content: flex-end; margin-top: 20px; font-size: 13px; }
+.current-heading { margin-top: 32px; }
+@media(max-width: 550px) { .toolbar { padding: 12px; } .range-selector { width: 100%; } .range-selector button { flex: 1; padding: 10px; } }
+@media(prefers-reduced-motion: reduce) { .metric-button { transition: none; } }

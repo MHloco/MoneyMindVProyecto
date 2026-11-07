@@ -1,0 +1,25 @@
+<div class="charts-grid">
+  <section class="card">
+    <div class="heading"><h2>Flujo mensual</h2><span>{{ range }} meses · {{ currency }}</span></div>
+    <p class="hint">Pasa el cursor para ver importes. Pulsa una barra para explorar sus movimientos.</p>
+    <div class="legend" aria-label="Series visibles">
+      <button type="button" [attr.aria-pressed]="showIncome" (click)="toggleSeries('INCOME')"><i class="income"></i>Ingresos</button>
+      <button type="button" [attr.aria-pressed]="showExpenses" (click)="toggleSeries('EXPENSE')"><i class="expense"></i>Gastos</button>
+    </div>
+    <div class="chart"><canvas baseChart type="bar" [data]="barData" [options]="barOptions" (chartClick)="selectBar($event)" role="img" aria-label="Flujo mensual interactivo. También puedes seleccionar un mes en la tabla inferior."></canvas></div>
+    <p *ngIf="!showIncome && !showExpenses" role="status">Activa Ingresos o Gastos para ver las barras.</p>
+    <details><summary>Explorar valores por mes</summary><div class="table-wrapper"><table>
+      <thead><tr><th>Mes</th><th>Ingresos</th><th>Gastos</th><th>Balance</th></tr></thead>
+      <tbody><tr *ngFor="let month of months"><td><button type="button" [disabled]="busy" (click)="monthSelected.emit({month: month.mes.slice(0, 7), type: ''})">{{ month.mes | date:'MM/yyyy' }}</button></td><td>{{ month.ingresos | currency:currency }}</td><td>{{ month.gastos | currency:currency }}</td><td>{{ month.balance | currency:currency }}</td></tr></tbody>
+    </table></div></details>
+  </section>
+  <section class="card">
+    <h2>Gastos por categoría</h2><p class="hint">Pulsa un segmento o una categoría para filtrar el detalle del mes.</p>
+    <div class="donut-wrapper" *ngIf="total; else emptyCategories">
+      <canvas baseChart type="doughnut" [data]="donutData" [options]="donutOptions" (chartClick)="selectSlice($event)" role="img" aria-label="Distribución de gastos. Categorías seleccionables debajo del gráfico."></canvas>
+      <div class="donut-total"><strong>{{ total | currency:currency }}</strong><span>Total del mes</span></div>
+    </div>
+    <ng-template #emptyCategories><p class="empty">No hay gastos registrados en este mes.</p></ng-template>
+    <ul class="category-list"><li *ngFor="let item of financial.gastosCategorias"><button type="button" [disabled]="busy" [attr.aria-pressed]="category === (item.id || 'uncategorized')" (click)="categorySelected.emit(item)"><span><i [style.background]="item.color"></i>{{ item.nombre }}</span><strong>{{ item.total | currency:currency }} · {{ item.porcentaje }}%</strong></button></li></ul>
+  </section>
+</div>

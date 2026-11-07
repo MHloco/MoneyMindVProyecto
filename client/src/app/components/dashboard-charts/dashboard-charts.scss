@@ -1,0 +1,29 @@
+:host { display: block; }
+* { box-sizing: border-box; }
+.charts-grid { display: grid; grid-template-columns: 1.5fr 1fr; gap: 24px; }
+.card { padding: 24px; border: 1px solid var(--line); border-radius: 14px; background: var(--coal); min-width: 0; }
+h2 { color: var(--gold-soft); font-size: 19px; }
+.heading { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+.heading span, .hint, .empty { color: #b5b0a6; font-size: 13px; line-height: 1.6; }
+.legend { display: flex; gap: 10px; margin: 16px 0; }
+button { font: inherit; cursor: pointer; color: var(--gold-soft); border: 1px solid var(--line); border-radius: 8px; background: transparent; padding: 9px 12px; }
+button:hover, button[aria-pressed=true] { background: #c9a24b18; border-color: var(--gold); }
+button:focus-visible, summary:focus-visible { outline: 2px solid var(--gold-soft); outline-offset: 3px; }
+button:disabled { opacity: .5; cursor: wait; }
+.legend button[aria-pressed=false] { opacity: .5; text-decoration: line-through; }
+i { display: inline-block; width: 9px; height: 9px; border-radius: 50%; margin-right: 8px; }
+.income { background: #9bcca4; } .expense { background: var(--gold); }
+.chart { height: 280px; position: relative; }
+canvas { cursor: pointer; }
+.donut-wrapper { position: relative; height: 245px; max-width: 340px; margin: 16px auto; }
+.donut-total { position: absolute; inset: 35% 15%; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px; pointer-events: none; }
+.donut-total strong { font-size: 20px; } .donut-total span { color: #b5b0a6; font-size: 12px; }
+.category-list { list-style: none; padding: 0; margin: 20px 0 0; }
+.category-list button { display: flex; align-items: center; justify-content: space-between; gap: 12px; width: 100%; margin-top: 8px; text-align: left; font-size: 13px; }
+.category-list strong { white-space: nowrap; color: var(--ivory); }
+.table-wrapper { overflow-x: auto; }
+table { width: 100%; border-collapse: collapse; font-size: 12px; } th, td { padding: 12px 6px; text-align: left; border-bottom: 1px solid var(--line); }
+summary { margin-top: 20px; color: var(--gold-soft); cursor: pointer; }
+.empty { padding: 60px 0; text-align: center; }
+@media(max-width: 1150px) { .charts-grid { grid-template-columns: 1fr; } }
+@media(max-width: 550px) { .card { padding: 18px; } .category-list button { flex-wrap: wrap; } }

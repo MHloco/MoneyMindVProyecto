@@ -1,0 +1,248 @@
+<div class="dashboard-layout">
+  <app-sidebar></app-sidebar>
+
+  <main class="expenses-page">
+    <div class="page-header">
+      <div>
+        <h1>Gastos</h1>
+        <p>Registra y analiza tus gastos.</p>
+      </div>
+
+      <button class="primary-button" (click)="openCreateForm()">+ Registrar gasto</button>
+    </div>
+
+    <!-- FILTROS -->
+
+    <section class="filters">
+      <div class="field">
+        <label for="expense-start">Desde</label>
+        <input id="expense-start" type="date" [(ngModel)]="startDate" />
+      </div>
+
+      <div class="field">
+        <label for="expense-end">Hasta</label>
+        <input id="expense-end" type="date" [(ngModel)]="endDate" />
+      </div>
+
+      <div class="field">
+        <label for="expense-category-filter">Categoría</label>
+        <select id="expense-category-filter" [(ngModel)]="categoryId">
+          <option value="">Todas las categorías</option>
+
+          <option *ngFor="let category of getCategoryOptions()" [value]="category.id">
+            {{ category.name }}
+          </option>
+        </select>
+      </div>
+
+      <div class="field">
+        <label for="expense-method-filter">Método de pago</label>
+        <select id="expense-method-filter" [(ngModel)]="paymentMethod">
+          <option value="">Todos los métodos</option>
+
+          <option *ngFor="let method of paymentMethods" [value]="method">
+            {{ method }}
+          </option>
+        </select>
+      </div>
+
+      <div class="field search-field">
+        <label for="expense-search">Descripción o etiqueta</label>
+        <input
+          id="expense-search"
+          type="text"
+          [(ngModel)]="search"
+          placeholder="Buscar descripción o etiqueta..."
+        />
+      </div>
+
+      <div class="filter-actions">
+        <button class="primary-button" (click)="applyFilters()">Buscar</button>
+
+        <button class="secondary-button" (click)="clearFilters()">Limpiar</button>
+      </div>
+    </section>
+
+    <div *ngIf="errorMessage" class="error" role="alert">
+      {{ errorMessage }}
+    </div>
+
+    <!-- TABLA -->
+
+    <section class="table-card">
+      <div *ngIf="loading" class="loading">Cargando gastos...</div>
+
+      <div class="table-scroll" tabindex="0" role="region" aria-label="Lista de gastos">
+        <table *ngIf="!loading">
+          <thead>
+            <tr>
+              <th>Fecha</th>
+
+              <th>Categoría</th>
+
+              <th>Descripción</th>
+
+              <th>Método</th>
+
+              <th>Etiquetas</th>
+
+              <th>Monto</th>
+
+              <th>Acciones</th>
+            </tr>
+          </thead>
+
+          <tbody>
+            <tr *ngFor="let expense of expenses">
+              <td>
+                {{ expense.transaction_date | date: 'dd/MM/yyyy' }}
+              </td>
+
+              <td>
+                <div class="category-cell">
+                  <span class="category-dot" [style.background]="expense.category_color"> </span>
+
+                  <span>
+                    {{ expense.category_name || 'Sin categoría' }}
+                  </span>
+                </div>
+              </td>
+
+              <td>
+                <strong>
+                  {{ expense.description }}
+                </strong>
+
+                <small *ngIf="expense.notes">
+                  {{ expense.notes }}
+                </small>
+              </td>
+
+              <td>
+                {{ expense.payment_method }}
+              </td>
+
+              <td>
+                <span *ngFor="let tag of expense.tags" class="tag"> #{{ tag }} </span>
+              </td>
+
+              <td class="amount">
+                - {{ expense.amount | number: '1.2-2' }}
+                {{ expense.currency }}
+              </td>
+
+              <td class="actions">
+                <button (click)="openEditForm(expense)">Editar</button>
+
+                <button class="delete" (click)="deleteExpense(expense)">Eliminar</button>
+              </td>
+            </tr>
+
+            <tr *ngIf="expenses.length === 0">
+              <td colspan="7" class="empty">No se encontraron gastos.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- PAGINACIÓN -->
+
+      <div *ngIf="!loading && total > 0" class="pagination">
+        <button (click)="previousPage()" aria-label="Página anterior" [disabled]="page === 1">
+          ‹
+        </button>
+
+        <span> Página {{ page }} de {{ totalPages }} </span>
+
+        <button (click)="nextPage()" aria-label="Página siguiente" [disabled]="page === totalPages">
+          ›
+        </button>
+      </div>
+    </section>
+
+    <!-- FORMULARIO -->
+
+    <section *ngIf="showForm" class="form-card">
+      <h2>
+        {{ editingExpense ? 'Editar gasto' : 'Registrar gasto' }}
+      </h2>
+      <p class="form-description">
+        Completa los datos de tu gasto para mantener tus finanzas al día.
+      </p>
+
+      <div class="form-grid">
+        <div class="field">
+          <label for="expense-amount"> Monto </label>
+
+          <input id="expense-amount" type="number" min="0.01" step="0.01" [(ngModel)]="amount" />
+        </div>
+
+        <div class="field">
+          <label for="expense-date"> Fecha </label>
+
+          <input id="expense-date" type="date" [(ngModel)]="transactionDate" />
+        </div>
+
+        <div class="field">
+          <label for="expense-category"> Categoría </label>
+
+          <select id="expense-category" [(ngModel)]="selectedCategory">
+            <option value="">Seleccionar categoría</option>
+
+            <option *ngFor="let category of getCategoryOptions()" [value]="category.id">
+              {{ category.name }}
+            </option>
+          </select>
+        </div>
+
+        <div class="field">
+          <label for="expense-method"> Método de pago </label>
+
+          <select id="expense-method" [(ngModel)]="selectedPaymentMethod">
+            <option *ngFor="let method of paymentMethods" [value]="method">
+              {{ method }}
+            </option>
+          </select>
+        </div>
+
+        <div class="field full-width">
+          <label for="expense-description"> Descripción </label>
+
+          <input
+            id="expense-description"
+            type="text"
+            maxlength="160"
+            [(ngModel)]="description"
+            placeholder="Ej. Compra de supermercado"
+          />
+        </div>
+
+        <div class="field full-width">
+          <label for="expense-notes"> Notas </label>
+
+          <textarea id="expense-notes" [(ngModel)]="notes" placeholder="Notas opcionales">
+          </textarea>
+        </div>
+
+        <div class="field full-width">
+          <label for="expense-tags"> Etiquetas </label>
+
+          <input
+            id="expense-tags"
+            type="text"
+            [(ngModel)]="tagsInput"
+            placeholder="comida, casa, semanal"
+          />
+        </div>
+      </div>
+
+      <div class="form-actions">
+        <button class="secondary-button" (click)="closeForm()">Cancelar</button>
+
+        <button class="primary-button" (click)="saveExpense()">
+          {{ editingExpense ? 'Guardar cambios' : 'Registrar gasto' }}
+        </button>
+      </div>
+    </section>
+  </main>
+</div>

@@ -1,0 +1,118 @@
+
+
+
+.dashboard-layout {
+  display: flex;
+  min-height: 100vh;
+  background-color: var(--black, #0a0a0b);
+  color: var(--ivory, #f5f1e8);
+}
+
+/* Compensar el espacio del sidebar (que mide 265px y tiene position: fixed) */
+.main-content {
+  margin-left: 265px; /* Empuja el contenido hacia la derecha para que no lo tape el sidebar */
+  flex: 1;
+  padding: 30px 40px;
+  min-height: 100vh;
+  box-sizing: border-box;
+}
+
+/* Estilos de cabecera para visibilidad de texto */
+.alerts-header {
+  margin-bottom: 25px;
+
+  h1 {
+    font-size: 28px;
+    font-weight: 700;
+    color: var(--gold-soft, #e2c074);
+    margin: 0 0 8px 0;
+  }
+
+  p {
+    font-size: 14px;
+    color: var(--muted, #8a857b);
+    margin: 0;
+  }
+}
+
+/* Tarjeta para estados de vacio/carga/error */
+.state-card {
+  background: rgba(201, 162, 75, 0.03);
+  border: 1px solid rgba(201, 162, 75, 0.2);
+  border-radius: 12px;
+  padding: 40px;
+  text-align: center;
+  color: var(--ivory, #f5f1e8);
+
+  h3 {
+    color: var(--gold-soft, #e2c074);
+    margin: 10px 0 5px;
+  }
+
+  p {
+    color: var(--muted, #8a857b);
+    margin: 0;
+  }
+}
+
+/* Tabla Dorada */
+.alerts-table-container {
+  background: rgba(14, 13, 11, 0.95);
+  border: 1px solid rgba(201, 162, 75, 0.25);
+  border-radius: 12px;
+  overflow: hidden;
+
+  .gold-table {
+    width: 100%;
+    border-collapse: collapse;
+    color: var(--ivory, #f5f1e8);
+
+    th, td {
+      padding: 14px 18px;
+      text-align: left;
+    }
+
+    thead {
+      background: rgba(201, 162, 75, 0.08);
+      border-bottom: 1px solid rgba(201, 162, 75, 0.25);
+
+      th {
+        color: var(--gold-soft, #e2c074);
+        font-size: 12px;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+      }
+    }
+
+    tbody tr {
+      border-bottom: 1px solid rgba(245, 241, 232, 0.05);
+
+      &:hover {
+        background: rgba(201, 162, 75, 0.04);
+      }
+
+      &.unread {
+        background: rgba(201, 162, 75, 0.07);
+      }
+    }
+  }
+}
+
+/* Botón Dorado */
+.btn-gold {
+  background: linear-gradient(135deg, #c9a24b, #997a15);
+  color: #0a0a0b;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 6px;
+  font-weight: 600;
+  font-size: 12px;
+  cursor: pointer;
+  transition: opacity 0.2s;
+
+  &:hover {
+    opacity: 0.9;
+  }
+}
+/* Subtítulos del tema MoneyMind. */
+:host :is(h2, h3, h4, .page-header p, .modal-subtitle, .subtitle, .info-head p) { color: var(--gold-soft); }

@@ -1,0 +1,185 @@
+﻿<div class="dashboard-layout">
+  <app-sidebar></app-sidebar>
+  <main class="incomes-page">
+    <p *ngIf="errorMessage" class="feedback error" role="alert">{{ errorMessage }}</p>
+    <div class="page-header">
+      <div>
+        <h1>Ingresos</h1>
+        <p>Historial de entradas de dinero</p>
+      </div>
+
+      <button mat-raised-button class="gold-button" (click)="openCreate()">Nuevo ingreso</button>
+    </div>
+
+    <section class="metrics">
+      <div class="metric-card">
+        <span>Ingresos del mes</span>
+
+        <strong> S/ {{ metrics.current_month | number: '1.2-2' }} </strong>
+
+        <small> Mes anterior: S/ {{ metrics.previous_month | number: '1.2-2' }} </small>
+      </div>
+    </section>
+
+    <section class="filters">
+      <mat-form-field appearance="outline">
+        <mat-label>Desde</mat-label>
+        <input matInput type="date" [(ngModel)]="filters.startDate" />
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Hasta</mat-label>
+        <input matInput type="date" [(ngModel)]="filters.endDate" />
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Fuente</mat-label>
+        <input matInput placeholder="Sueldo, Freelance..." [(ngModel)]="filters.source" />
+      </mat-form-field>
+
+      <button mat-raised-button class="gold-button" (click)="applyFilters()">Filtrar</button>
+
+      <button mat-button class="secondary-button" (click)="clearFilters()">Limpiar</button>
+    </section>
+
+    <section class="table-container">
+      <div class="table-scroll" tabindex="0" role="region" aria-label="Lista de ingresos">
+        <table>
+          <thead>
+            <tr>
+              <th>Fecha</th>
+              <th>Categoría</th>
+              <th>Fuente</th>
+              <th>Método</th>
+              <th>Monto</th>
+              <th>Acciones</th>
+            </tr>
+          </thead>
+
+          <tbody>
+            <tr *ngFor="let income of incomes">
+              <td>
+                {{ income.transaction_date | date: 'dd/MM/yyyy' }}
+              </td>
+
+              <td>
+                <span
+                  class="category-indicator"
+                  [style.background]="income.category_color || '#9E9E9E'"
+                >
+                  <mat-icon>
+                    {{ income.category_icon || 'category' }}
+                  </mat-icon>
+                </span>
+
+                {{ income.category_name || 'Sin categoría' }}
+              </td>
+
+              <td>
+                {{ income.source || 'Sin fuente' }}
+              </td>
+
+              <td>
+                {{ paymentLabel(income.payment_method) }}
+              </td>
+
+              <td class="amount">+ S/ {{ income.amount | number: '1.2-2' }}</td>
+
+              <td class="actions">
+                <button mat-icon-button aria-label="Editar ingreso" (click)="openEdit(income)">
+                  <mat-icon>edit</mat-icon>
+                </button>
+
+                <button
+                  mat-icon-button
+                  class="delete-button"
+                  aria-label="Eliminar ingreso"
+                  (click)="deleteIncome(income.id)"
+                >
+                  <mat-icon>delete</mat-icon>
+                </button>
+              </td>
+            </tr>
+
+            <tr *ngIf="incomes.length === 0">
+              <td colspan="6" class="empty">No hay ingresos registrados.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="pagination">
+        <button mat-button [disabled]="page === 1" (click)="previousPage()">Anterior</button>
+
+        <span> Página {{ page }} de {{ totalPages || 1 }} </span>
+
+        <button mat-button [disabled]="page >= totalPages" (click)="nextPage()">Siguiente</button>
+      </div>
+    </section>
+  </main>
+</div>
+<div class="modal-backdrop" *ngIf="showForm">
+  <div class="income-modal">
+    <div class="modal-header">
+      <h2>
+        {{ editingId ? 'Editar ingreso' : 'Nuevo ingreso' }}
+      </h2>
+
+      <button mat-icon-button aria-label="Cerrar" (click)="closeForm()">
+        <mat-icon>close</mat-icon>
+      </button>
+    </div>
+
+    <div class="form-grid">
+      <mat-form-field appearance="outline">
+        <mat-label>Monto</mat-label>
+        <input matInput type="number" min="0.01" step="0.01" [(ngModel)]="form.amount" />
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Fecha</mat-label>
+        <input matInput type="date" [(ngModel)]="form.transaction_date" />
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Categoría</mat-label>
+
+        <mat-select panelClass="incomes-select-panel" [(ngModel)]="form.category_id">
+          <mat-option value=""> Sin categoría </mat-option>
+
+          <mat-option *ngFor="let category of categories" [value]="category.id">
+            {{ category.name }}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Fuente</mat-label>
+        <input matInput placeholder="Sueldo, Freelance..." [(ngModel)]="form.source" />
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Método de cobro</mat-label>
+
+        <mat-select panelClass="incomes-select-panel" [(ngModel)]="form.payment_method">
+          <mat-option *ngFor="let method of paymentMethods" [value]="method">
+            {{ paymentLabel(method) }}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Notas</mat-label>
+
+        <textarea matInput rows="3" [(ngModel)]="form.notes"></textarea>
+      </mat-form-field>
+    </div>
+
+    <p *ngIf="formError" class="feedback error" role="alert">{{ formError }}</p>
+    <div class="modal-actions">
+      <button mat-button class="secondary-button" (click)="closeForm()">Cancelar</button>
+
+      <button mat-raised-button class="gold-button" [disabled]="saving" (click)="save()">{{ saving ? 'Guardando…' : 'Guardar' }}</button>
+    </div>
+  </div>
+</div>

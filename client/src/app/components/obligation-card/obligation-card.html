@@ -1,0 +1,59 @@
+          <article
+            class="obligation-card"
+            (click)="open.emit(obligation)"
+            role="button"
+            tabindex="0"
+            (keydown.enter)="open.emit(obligation)"
+            (keydown.space)="$event.preventDefault(); open.emit(obligation)"
+          >
+            <div class="card-header">
+              <div class="obligation-title">
+                <div class="obligation-icon">
+                  <mat-icon> account_balance </mat-icon>
+                </div>
+
+                <div>
+                  <h3>
+                    {{ obligation.name }}
+                  </h3>
+
+                  <span>
+                    {{ obligation.creditor || 'Sin acreedor' }}
+                  </span>
+                </div>
+              </div>
+
+              <span class="status" [class.paid]="obligation.status === 'PAID'">
+                {{ obligation.status === 'PAID' ? 'Pagada' : 'Activa' }}
+              </span>
+            </div>
+
+            <div class="amount">
+              S/
+              {{ obligation.total_amount | number: '1.2-2' }}
+            </div>
+
+            <div class="progress">
+              <div
+                class="progress-bar"
+                [style.width.%]="
+                  obligation.total_amount > 0
+                    ? (obligation.paid_amount / obligation.total_amount) * 100
+                    : 0
+                "
+              ></div>
+            </div>
+
+            <div class="card-footer">
+              <span>
+                Pagado: S/
+                {{ obligation.paid_amount | number: '1.2-2' }}
+              </span>
+
+              <span>
+                {{ obligation.installments_count }}
+
+                cuotas
+              </span>
+            </div>
+          </article>

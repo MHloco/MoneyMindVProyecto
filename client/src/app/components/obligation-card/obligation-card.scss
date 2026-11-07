@@ -1,0 +1,145 @@
+.obligation-card {
+  padding: 20px;
+
+  border: 1px solid rgba(201, 162, 75, 0.18);
+
+  border-radius: 12px;
+
+  background: var(--coal);
+
+  cursor: pointer;
+
+  transition:
+    transform 0.2s ease,
+    border-color 0.2s ease,
+    background 0.2s ease;
+}
+
+.obligation-card:hover {
+  transform: translateY(-2px);
+
+  border-color: rgba(201, 162, 75, 0.45);
+
+  background: #141416;
+}
+
+.card-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+
+  gap: 15px;
+}
+
+.obligation-title {
+  display: flex;
+  align-items: center;
+
+  gap: 11px;
+}
+
+.obligation-icon {
+  width: 36px;
+  height: 36px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  flex-shrink: 0;
+
+  border-radius: 8px;
+
+  background: rgba(201, 162, 75, 0.09);
+
+  color: var(--gold);
+}
+
+.obligation-icon mat-icon {
+  font-size: 19px;
+}
+
+.obligation-title h3 {
+  margin: 0 0 4px;
+
+  color: var(--ivory);
+
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.obligation-title span {
+  color: var(--muted);
+
+  font-size: 12px;
+}
+
+.status {
+  padding: 5px 8px;
+
+  border: 1px solid rgba(201, 162, 75, 0.3);
+
+  border-radius: 20px;
+
+  color: var(--gold);
+
+  font-size: 13px;
+  letter-spacing: 0.5px;
+}
+
+.status.paid {
+  border-color: rgba(120, 170, 120, 0.35);
+
+  color: #8db38d;
+}
+
+.amount {
+  margin: 22px 0 14px;
+
+  color: var(--ivory);
+
+  font-family: inherit;
+
+  font-size: 25px;
+}
+
+.progress {
+  width: 100%;
+  height: 4px;
+
+  overflow: hidden;
+
+  border-radius: 12px;
+
+  background: #27272a;
+}
+
+.progress-bar {
+  height: 100%;
+
+  border-radius: inherit;
+
+  background: var(--gold);
+
+  transition: width 0.3s ease;
+}
+
+.card-footer {
+  display: flex;
+  justify-content: space-between;
+
+  margin-top: 13px;
+
+  color: var(--muted);
+
+  font-size: 12px;
+}
+
+
+:host { display: block; min-width: 0; }
+.obligation-card { box-sizing: border-box; height: 100%; background: rgba(14, 13, 11, 0.95); border-color: var(--line); }
+.obligation-card:focus-visible { outline: 2px solid var(--gold-soft); outline-offset: 3px; }
+.obligation-title { min-width: 0; }
+.obligation-title h3 { color: var(--gold-soft); overflow-wrap: anywhere; }
+.amount { font-variant-numeric: tabular-nums; }
+.card-header, .card-footer { flex-wrap: wrap; }

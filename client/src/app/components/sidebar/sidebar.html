@@ -1,0 +1,13 @@
+<aside class="sidebar">
+  <div class="brand"><div class="brand-icon">↗</div><div><h1>MoneyMind</h1><span>Tu futuro en buenas manos</span></div></div>
+  <nav class="sidebar-nav" aria-label="Navegación principal">
+    @if (authService.currentUser()?.role === 'SUPERUSER') {
+      <a class="nav-item" routerLink="/admin" routerLinkActive="active"><span class="nav-icon" aria-hidden="true">◈</span><span>Administración</span></a>
+    }
+    <a *ngFor="let link of links" class="nav-item" [routerLink]="link.path" routerLinkActive="active" ariaCurrentWhenActive="page">
+      <span class="nav-icon" aria-hidden="true">{{ link.icon }}</span><span>{{ link.label }}</span>
+    </a>
+  </nav>
+  <button class="logout-button" type="button" (click)="logout()"><span aria-hidden="true">↪</span> Cerrar sesión</button>
+  <div class="sidebar-promo"><div class="promo-icon">↗</div><h3>Mejora tu futuro</h3><p>Organiza tus finanzas, logra tus metas.</p></div>
+</aside>

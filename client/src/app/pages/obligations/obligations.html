@@ -1,0 +1,397 @@
+﻿<div class="app-layout">
+  <!-- SIDEBAR -->
+  <app-sidebar></app-sidebar>
+
+  <!-- CONTENIDO -->
+  <main class="main-content">
+    <p *ngIf="errorMessage" class="feedback error" role="alert">{{ errorMessage }}</p>
+    <!-- ============================= -->
+    <!-- PÁGINA OBLIGACIONES -->
+    <!-- ============================= -->
+
+    <div class="obligations-page">
+      <p *ngIf="successMessage" class="feedback success" role="status">{{ successMessage }}</p>
+      <!-- HEADER -->
+
+      <div class="page-header">
+        <div>
+          <h1>Obligaciones</h1>
+
+          <p>Administra tus deudas y pagos pendientes.</p>
+        </div>
+
+        <button mat-raised-button class="gold-button" (click)="openCreate()">
+          <mat-icon> add </mat-icon>
+
+          Nueva obligación
+        </button>
+      </div>
+
+      <!-- MÉTRICAS -->
+
+      <section class="metrics">
+        <div class="metric-card">
+          <span> Total adeudado </span>
+
+          <strong>
+            S/
+            {{ summary.total_owed | number: '1.2-2' }}
+          </strong>
+        </div>
+
+        <div class="metric-card">
+          <span> Total pagado </span>
+
+          <strong>
+            S/
+            {{ summary.total_paid | number: '1.2-2' }}
+          </strong>
+        </div>
+
+        <div class="metric-card">
+          <span> Próximo vencimiento </span>
+
+          <strong *ngIf="summary.nearest_due_date">
+            {{ summary.nearest_due_date | date: 'dd/MM/yyyy' }}
+          </strong>
+
+          <strong *ngIf="!summary.nearest_due_date"> Sin pendientes </strong>
+        </div>
+      </section>
+
+      <!-- OBLIGACIONES -->
+
+      <section class="obligations-section">
+        <div class="section-header">
+          <div>
+            <h2>Mis obligaciones</h2>
+          </div>
+        </div>
+
+        <!-- CARDS -->
+
+        <div class="obligations-grid" *ngIf="obligations.length > 0">
+          <app-obligation-card *ngFor="let obligation of obligations" [obligation]="obligation" (open)="openDetail($event)"></app-obligation-card>
+        </div>
+
+        <!-- ESTADO VACÍO -->
+
+        <div class="empty-state" *ngIf="obligations.length === 0">
+          <div class="empty-icon">
+            <mat-icon> account_balance </mat-icon>
+          </div>
+
+          <h3>No tienes obligaciones</h3>
+
+          <p>Registra una deuda para comenzar a llevar el control de tus pagos.</p>
+
+          <button mat-stroked-button class="outline-button" (click)="openCreate()">
+            <mat-icon> add </mat-icon>
+
+            Registrar obligación
+          </button>
+        </div>
+      </section>
+    </div>
+  </main>
+</div>
+
+<!-- ================================= -->
+<!-- MODAL CREAR OBLIGACIÓN -->
+<!-- ================================= -->
+
+<div class="modal-backdrop" *ngIf="showForm">
+  <div class="modal">
+    <div class="modal-header">
+      <div>
+        <span class="eyebrow"> NUEVO REGISTRO </span>
+
+        <h2>Nueva obligación</h2>
+      </div>
+
+      <button mat-icon-button class="close-button" aria-label="Cerrar" (click)="closeForm()">
+        <mat-icon> close </mat-icon>
+      </button>
+    </div>
+
+    <div class="form-grid">
+      <mat-form-field appearance="outline">
+        <mat-label> Nombre </mat-label>
+
+        <input matInput [(ngModel)]="form.name" />
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label> Acreedor </mat-label>
+
+        <input matInput [(ngModel)]="form.creditor" />
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label> Monto total </mat-label>
+
+        <input matInput type="number" min="0" [(ngModel)]="form.total_amount" />
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label> Número de cuotas </mat-label>
+
+        <input matInput type="number" min="1" [(ngModel)]="form.installments_count" />
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label> Tasa de interés (%) </mat-label>
+
+        <input matInput type="number" min="0" [(ngModel)]="form.interest_rate" />
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label> Fecha de inicio </mat-label>
+
+        <input matInput type="date" [(ngModel)]="form.start_date" />
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label> Día de vencimiento </mat-label>
+
+        <input matInput type="number" min="1" max="31" [(ngModel)]="form.due_day" />
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label> Tipo </mat-label>
+
+        <mat-select panelClass="obligations-select-panel" [(ngModel)]="form.type">
+          <mat-option value="OTHER"> Otro </mat-option>
+
+          <mat-option value="LOAN"> Préstamo </mat-option>
+
+          <mat-option value="CREDIT_CARD"> Tarjeta de crédito </mat-option>
+
+          <mat-option value="MORTGAGE"> Hipoteca </mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label> Notas </mat-label>
+
+        <textarea matInput rows="3" [(ngModel)]="form.notes"></textarea>
+      </mat-form-field>
+    </div>
+
+    <p *ngIf="formError" class="feedback error" role="alert">{{ formError }}</p>
+    <div class="modal-actions">
+      <button mat-button class="cancel-button" (click)="closeForm()">Cancelar</button>
+
+      <button mat-raised-button class="gold-button" [disabled]="saving" (click)="save()">{{ saving ? 'Guardando…' : 'Crear obligación' }}</button>
+    </div>
+  </div>
+</div>
+
+<!-- ================================= -->
+<!-- MODAL DETALLE -->
+<!-- ================================= -->
+
+<div class="modal-backdrop" *ngIf="showDetail">
+  <div class="detail-modal" *ngIf="selectedObligation">
+    <div class="modal-header">
+      <div>
+        <span class="eyebrow"> DETALLE </span>
+
+        <h2>
+          {{ selectedObligation.name }}
+        </h2>
+
+        <span class="modal-subtitle">
+          {{ selectedObligation.creditor || 'Sin acreedor' }}
+        </span>
+      </div>
+
+      <button mat-icon-button class="close-button" aria-label="Cerrar" (click)="closeDetail()">
+        <mat-icon> close </mat-icon>
+      </button>
+    </div>
+
+    <!-- INFO -->
+
+    <div class="detail-info">
+      <div>
+        <span> Deuda total </span>
+
+        <strong>
+          S/
+          {{ selectedObligation.total_amount | number: '1.2-2' }}
+        </strong>
+      </div>
+
+      <div>
+        <span> Pagado </span>
+
+        <strong>
+          S/
+          {{ selectedObligation.paid_amount | number: '1.2-2' }}
+        </strong>
+      </div>
+
+      <div>
+        <span> Tasa </span>
+
+        <strong> {{ selectedObligation.interest_rate || 0 }}% </strong>
+      </div>
+
+      <div>
+        <span> Estado </span>
+
+        <strong>
+          {{ selectedObligation.status }}
+        </strong>
+      </div>
+    </div>
+
+    <h3 class="installments-title">Cuotas</h3>
+    <p *ngIf="successMessage" class="feedback success" role="status">{{ successMessage }}</p>
+
+    <div class="installments">
+      <div class="installment" *ngFor="let installment of selectedObligation.installments">
+        <div class="installment-main">
+          <strong> Cuota {{ installment.number }} </strong>
+
+          <small>
+            Vence:
+
+            {{ installment.due_date | date: 'dd/MM/yyyy' }}
+          </small>
+        </div>
+
+        <div class="installment-amount">
+          <strong>
+            S/
+            {{ installment.amount | number: '1.2-2' }}
+          </strong>
+
+          <small>
+            Pagado: S/
+            {{ installment.paid_amount | number: '1.2-2' }}
+          </small>
+        </div>
+
+        <span class="installment-status" [class.paid]="installment.status === 'PAID'">
+          {{ installment.status }}
+        </span>
+
+        <button
+          *ngIf="installment.status !== 'PAID'"
+          mat-raised-button
+          class="gold-button small-button"
+          (click)="openPay(installment)"
+        >
+          Pagar cuota
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ================================= -->
+<!-- MODAL PAGAR CUOTA -->
+<!-- ================================= -->
+
+<div class="modal-backdrop" *ngIf="showPayModal">
+  <div class="pay-modal" *ngIf="selectedInstallment" role="dialog" aria-modal="true" aria-label="Registrar pago de cuota" [attr.aria-busy]="paying">
+    <div class="modal-header">
+      <div>
+        <span class="eyebrow"> REGISTRAR PAGO </span>
+
+        <h2>
+          Pagar cuota
+          {{ selectedInstallment.number }}
+        </h2>
+      </div>
+
+      <button mat-icon-button class="close-button" aria-label="Cerrar" [disabled]="paying" (click)="closePay()">
+        <mat-icon> close </mat-icon>
+      </button>
+    </div>
+
+    <mat-form-field appearance="outline" class="payment-amount-field" subscriptSizing="dynamic">
+      <mat-label> Monto </mat-label>
+
+      <input matInput type="number" min="0.01" step="0.01" [max]="remainingAmount" [disabled]="paying" [(ngModel)]="payment.amount" (ngModelChange)="paymentChanged()" />
+      <mat-hint>Saldo pendiente: S/ {{ remainingAmount | number: '1.2-2' }}</mat-hint>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+      <mat-label> Método de pago </mat-label>
+
+      <mat-select panelClass="obligations-select-panel" [disabled]="paying" [(ngModel)]="payment.payment_method" (ngModelChange)="paymentChanged()">
+        <mat-option value="CASH"> Efectivo </mat-option>
+
+        <mat-option value="CREDIT_CARD"> Tarjeta de crédito (simulación) </mat-option>
+
+        <mat-option value="DEBIT_CARD"> Tarjeta de débito (simulación) </mat-option>
+
+        <mat-option value="BANK_TRANSFER"> Transferencia (simulación) </mat-option>
+
+        <mat-option value="YAPE"> Yape </mat-option>
+
+        <mat-option value="PLIN"> Plin (simulación) </mat-option>
+      </mat-select>
+    </mat-form-field>
+
+    <section *ngIf="isSimulatedMethod" class="yape-payment" aria-label="Simulación bancaria">
+      <h3>Simulación de pago</h3>
+      <p>Usa únicamente datos ficticios. Esta prueba no envía dinero, no guarda datos bancarios y no marca la cuota como pagada.</p>
+      <div class="simulation-grid" *ngIf="isCardMethod">
+        <mat-form-field appearance="outline"><mat-label>Titular ficticio</mat-label><input matInput autocomplete="off" maxlength="80" [(ngModel)]="simulation.holder" /></mat-form-field>
+        <mat-form-field appearance="outline"><mat-label>Tarjeta de prueba</mat-label><input matInput inputmode="numeric" autocomplete="off" maxlength="19" placeholder="4242 4242 4242 4242" [(ngModel)]="simulation.cardNumber" /></mat-form-field>
+        <mat-form-field appearance="outline"><mat-label>Vencimiento MM/AA</mat-label><input matInput autocomplete="off" maxlength="5" placeholder="12/30" [(ngModel)]="simulation.expiry" /></mat-form-field>
+        <mat-form-field appearance="outline"><mat-label>CVV ficticio</mat-label><input matInput type="password" inputmode="numeric" autocomplete="off" maxlength="3" placeholder="123" [(ngModel)]="simulation.cvv" /></mat-form-field>
+      </div>
+      <div class="simulation-grid" *ngIf="payment.payment_method === 'BANK_TRANSFER'">
+        <mat-form-field appearance="outline"><mat-label>Banco de prueba</mat-label><mat-select [(ngModel)]="simulation.bank"><mat-option value="BCP">BCP</mat-option><mat-option value="INTERBANK">Interbank</mat-option><mat-option value="BBVA">BBVA</mat-option><mat-option value="SCOTIABANK">Scotiabank</mat-option></mat-select></mat-form-field>
+        <mat-form-field appearance="outline"><mat-label>Titular ficticio</mat-label><input matInput autocomplete="off" maxlength="80" [(ngModel)]="simulation.holder" /></mat-form-field>
+        <mat-form-field appearance="outline"><mat-label>Cuenta de prueba</mat-label><input matInput inputmode="numeric" autocomplete="off" maxlength="20" placeholder="00000000000000000000" [(ngModel)]="simulation.account" /></mat-form-field>
+        <mat-form-field appearance="outline"><mat-label>Referencia ficticia</mat-label><input matInput autocomplete="off" maxlength="40" placeholder="DEMO001" [(ngModel)]="simulation.reference" /></mat-form-field>
+      </div>
+      <div class="simulation-grid" *ngIf="payment.payment_method === 'PLIN'">
+        <mat-form-field appearance="outline"><mat-label>Celular de prueba</mat-label><input matInput inputmode="numeric" autocomplete="off" maxlength="9" placeholder="900000000" [(ngModel)]="simulation.phone" /></mat-form-field>
+        <mat-form-field appearance="outline"><mat-label>Referencia ficticia</mat-label><input matInput autocomplete="off" maxlength="40" placeholder="DEMO001" [(ngModel)]="simulation.reference" /></mat-form-field>
+      </div>
+      <p *ngIf="simulationMessage" class="feedback success" role="status">{{ simulationMessage }}</p>
+    </section>
+
+    <section *ngIf="payment.payment_method === 'YAPE'" class="yape-payment" aria-label="Pago con Yape">
+      <h3>Paga con Yape</h3>
+      <p class="yape-recipient">Destinatario: <strong>{{ yapeRecipient }}</strong></p>
+      <p *ngIf="selectedObligation?.creditor">Acreedor de esta obligación: <strong>{{ selectedObligation?.creditor }}</strong>.</p>
+      <div class="yape-qr-card" *ngIf="!yapeQrUnavailable">
+        <img class="yape-qr" [src]="yapeQr" [alt]="'QR de Yape de ' + yapeRecipient" (error)="onYapeQrError()" />
+      </div>
+      <p *ngIf="yapeQrUnavailable" class="feedback error" role="alert">No se pudo cargar el QR del destinatario. Intenta recargar la página.</p>
+      <p>Este QR pertenece a <strong>{{ yapeRecipient }}</strong>. Úsalo solo si es el destinatario acordado con tu acreedor. En Yape comprueba el nombre y el monto de <strong>S/ {{ payment.amount | number: '1.2-2' }}</strong> antes de pagar.</p>
+      <p>MoneyMind registra tu declaración del pago; no verifica la transferencia con Yape. También puedes registrar un yapeo que ya realizaste.</p>
+      <mat-form-field appearance="outline">
+        <mat-label>Número de operación (opcional)</mat-label>
+        <input matInput maxlength="100" [disabled]="paying" [(ngModel)]="yapeReference" />
+      </mat-form-field>
+      <label class="yape-confirmation">
+        <input type="checkbox" [disabled]="paying" [(ngModel)]="yapeConfirmed" />
+        Ya realicé el pago por este monto al destinatario correcto en Yape.
+      </label>
+    </section>
+
+    <mat-form-field appearance="outline">
+      <mat-label> Notas </mat-label>
+
+      <textarea matInput rows="3" [disabled]="paying" [(ngModel)]="payment.notes"></textarea>
+    </mat-form-field>
+
+    <p *ngIf="paymentError" class="feedback error" role="alert">{{ paymentError }}</p>
+    <div class="modal-actions">
+      <button mat-button class="cancel-button" [disabled]="paying" (click)="closePay()">Cancelar</button>
+
+      <button mat-raised-button class="gold-button" [disabled]="paying" (click)="payInstallment()">
+        {{ paying ? 'Registrando…' : isSimulatedMethod ? 'Simular pago' : payment.payment_method === 'YAPE' ? 'Registrar pago realizado' : 'Confirmar pago' }}
+      </button>
+    </div>
+  </div>
+</div>

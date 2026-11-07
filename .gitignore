@@ -1,0 +1,43 @@
+
+# Dependencias
+node_modules/
+.venv/
+venv/
+__pycache__/
+*.pyc
+
+# Variables de entorno y credenciales
+.env
+.env.*
+*.env
+*.env.*
+*.key
+*.p12
+*.pfx
+
+# Carpetas privadas de herramientas
+.agents/
+.aws/
+.codex/
+.extensions/
+
+# Archivos comprimidos
+*.rar
+*.zip
+*.7z
+
+# Archivos generados
+dist/
+build/
+coverage/
+.angular/
+.cache/
+*.log
+
+# Configuración local
+.vscode/
+.idea/
+
+# Sistema operativo
+.DS_Store
+Thumbs.db

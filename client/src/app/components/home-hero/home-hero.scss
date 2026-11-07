@@ -1,0 +1,130 @@
+.hero {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  height: 100vh;
+  min-height: 640px;
+
+  background: radial-gradient(ellipse at 50% 120%, #1a1410 0%, var(--black) 55%);
+}
+
+.v-stage {
+  position: relative;
+  cursor: grab;
+  user-select: none;
+  touch-action: none;
+}
+
+.v-letter {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: clamp(14rem, 38vw, 30rem);
+  font-weight: 700;
+  line-height: 0.85;
+
+  color: transparent;
+  background: linear-gradient(160deg, #f7ecd2 10%, var(--gold) 45%, #6e5420 90%);
+  background-clip: text;
+  -webkit-background-clip: text;
+
+  filter: drop-shadow(0 0 60px rgba(201, 162, 75, 0.18));
+  will-change: transform;
+}
+
+.v-ring {
+  position: absolute;
+  inset: -6%;
+  border: 1px solid var(--line);
+  border-radius: 50%;
+  pointer-events: none;
+  animation: spin 40s linear infinite;
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: -3px;
+    left: 50%;
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--gold);
+  }
+}
+
+.hero-eyebrow {
+  position: absolute;
+  top: 24%;
+  left: 50%;
+  transform: translateX(-50%);
+
+  color: var(--gold);
+  font-size: 0.72rem;
+  letter-spacing: 0.5em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.hero-sub {
+  position: absolute;
+  bottom: 14%;
+  left: 50%;
+  transform: translateX(-50%);
+
+  color: var(--muted);
+  font-size: 0.85rem;
+  letter-spacing: 0.12em;
+  text-align: center;
+}
+
+.drag-hint {
+  position: absolute;
+  bottom: 8%;
+  left: 50%;
+  transform: translateX(-50%);
+
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+
+  color: #55555c;
+  font-size: 0.68rem;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+
+  .dot {
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    background: var(--gold);
+    animation: pulse 2s ease-in-out infinite;
+  }
+}
+
+.scroll-cue {
+  position: absolute;
+  bottom: 2.2rem;
+  left: 50%;
+  transform: translateX(-50%);
+
+  width: 1px;
+  height: 44px;
+  background: linear-gradient(var(--gold), transparent);
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes pulse {
+  50% {
+    opacity: 0.2;
+    transform: scale(0.6);
+  }
+}
+
+
+:host { display: block; scroll-margin-top: 70px; }
+.hero-sub { color: var(--gold-soft); }

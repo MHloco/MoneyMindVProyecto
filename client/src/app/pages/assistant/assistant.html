@@ -1,0 +1,84 @@
+<div class="assistant-layout">
+  <app-sidebar />
+  <main class="main-content">
+    <header class="page-header">
+      <div><span class="eyebrow">MONEY MIND · IA</span><h1>Tu asistente financiero</h1><p>Entiende tus números y decide tu próximo paso.</p></div>
+      <span class="privacy-badge">✦ Solo los datos de tu cuenta</span>
+    </header>
+    <div class="workspace">
+      <aside class="history" aria-label="Historial de conversaciones">
+        <button type="button" class="primary" (click)="newConversation()" [disabled]="sending() || loading()">+ Nueva conversación</button>
+        <div class="history-heading"><h2>Conversaciones</h2><button type="button" class="refresh" (click)="loadConversations()" [disabled]="sending() || loading()" aria-label="Actualizar conversaciones">↻</button></div>
+        <p class="muted small">Tus 50 conversaciones más recientes</p>
+        <div class="conversation-list">
+          @for (conversation of conversations(); track conversation.id) {
+            <button type="button" class="conversation" [class.selected]="selectedId() === conversation.id"
+              [attr.aria-pressed]="selectedId() === conversation.id" [disabled]="sending() || loading()" (click)="openConversation(conversation)">
+              <span>{{ conversation.title }}</span><time>{{ conversation.updated_at | date:'dd/MM/yyyy' }}</time>
+            </button>
+          } @empty {
+            <p class="muted small">Tus conversaciones aparecerán aquí después de tu primera consulta.</p>
+          }
+        </div>
+        @if (usage(); as usage) {
+          <div class="usage"><span>Consultas · {{ usage.month }}</span><strong>{{ usage.used }} / {{ usage.limit < 0 ? 'Sin límite' : usage.limit }}</strong></div>
+        }
+      </aside>
+      <section class="chat" aria-label="Chat con el asistente">
+        <div class="notice">
+          <label for="financial-agent">Análisis de tus finanzas</label>
+          <select id="financial-agent" [(ngModel)]="selectedAgent" [disabled]="sending() || loading()">
+            <option value="all">Los cinco agentes</option><option value="habits">Hábitos de gasto</option>
+            <option value="anomalies">Gastos inusuales</option><option value="budgets">Presupuestos</option>
+            <option value="projection">Proyección del mes</option><option value="recommendations">Recomendaciones</option>
+          </select>
+          <button type="button" class="primary" (click)="analyze()" [disabled]="!agentsAvailable() || sending() || loading() || limitReached() || sessionExpired()">Analizar mis finanzas</button>
+          <p class="muted small">Usa los datos de tu cuenta y consume una consulta de tu plan. Los avisos detectados aparecerán en Alertas.</p>
+          @if (!agentsAvailable() && !loading()) { <p>El servicio de agentes no está disponible. <button type="button" class="refresh" (click)="loadConversations()">Volver a comprobar</button></p> }
+          @if (analysisNotice()) { <p role="status">{{ analysisNotice() }} <a routerLink="/alerts">Ver alertas</a></p> }
+        </div>
+        <div class="chat-heading"><span class="avatar" aria-hidden="true">✦</span><div><h2>MoneyMind Assistant</h2><span class="muted small">Ingresos, gastos y planes, en una conversación</span></div></div>
+        @if (!available() && !loading() && !error()) {
+          <div class="notice" role="status">
+            @if (agentsAvailable()) {
+              El chat aún no está configurado. Puedes seguir usando los análisis de tus finanzas.
+            } @else {
+              No se pudo conectar con el asistente. El chat y los análisis estarán disponibles cuando se restablezca el servicio.
+            }
+            <button type="button" class="refresh" (click)="loadConversations()">Volver a comprobar</button>
+          </div>
+        }
+        @if (error()) {
+          <div class="notice error" role="alert">{{ error() }}
+            @if (sessionExpired()) { <a routerLink="/auth">Iniciar sesión</a> }
+          </div>
+        }
+        @if (limitReached()) { <p class="notice" role="status">Alcanzaste las consultas de este mes. <a routerLink="/subscriptions">Ver mi plan</a></p> }
+        <div class="messages" #messageLog role="log" aria-label="Mensajes" aria-live="polite" [attr.aria-busy]="loading() || sending()">
+          @if (loading()) { <p class="muted" role="status">Cargando tus conversaciones…</p> }
+          @if (hasEarlierMessages()) { <p class="muted small">Se muestran los últimos 100 mensajes de esta conversación.</p> }
+          @if (!messages().length && !sending() && !loading()) {
+            <div class="welcome"><div class="welcome-icon" aria-hidden="true">✦</div><h2>Hablemos de tus finanzas</h2><p>Puedo ayudarte a entender tus gastos, revisar tus presupuestos y organizar tus próximos pagos.</p>
+              <div class="suggestions">@for (suggestion of suggestions; track suggestion) {
+                <button type="button" (click)="send(suggestion)" [disabled]="!available() || limitReached() || sessionExpired()">{{ suggestion }} <span aria-hidden="true">↗</span></button>
+              }</div>
+            </div>
+          }
+          @for (message of messages(); track message.id) {
+            <article class="message" [class.user]="message.role === 'USER'"><span class="sender">{{ message.role === 'USER' ? 'Tú' : 'MoneyMind' }}</span><p>{{ message.content }}</p><time>{{ message.created_at | date:'HH:mm' }}</time></article>
+          }
+          @if (pendingMessage()) { <article class="message user"><span class="sender">Tú</span><p>{{ pendingMessage() }}</p></article> }
+          @if (sending()) { <p class="thinking" role="status">✦ Revisando tus finanzas…</p> }
+        </div>
+        <form class="composer" (ngSubmit)="send()">
+          <label for="chat-message">Tu mensaje</label>
+          <div class="input-row"><textarea id="chat-message" name="message" [(ngModel)]="draft" maxlength="4000" rows="2" placeholder="Por ejemplo: ¿cómo van mis gastos este mes?"
+            [disabled]="sending() || loading() || !available() || limitReached() || sessionExpired()" (keydown)="onKeydown($event)" aria-describedby="chat-help"></textarea>
+            <button type="submit" class="primary" [disabled]="!draft.trim() || sending() || loading() || !available() || limitReached() || sessionExpired()">{{ sending() ? 'Enviando…' : 'Enviar ↑' }}</button></div>
+          <div id="chat-help" class="composer-help"><span>Enter para enviar · Mayús + Enter para otra línea</span><span>{{ draft.length }}/4000</span></div>
+          <p class="privacy-note">Al enviar, compartes tu consulta y un resumen de tus datos financieros con Google Gemini. Las respuestas pueden contener errores; verifica los importes antes de decidir.</p>
+        </form>
+      </section>
+    </div>
+  </main>
+</div>

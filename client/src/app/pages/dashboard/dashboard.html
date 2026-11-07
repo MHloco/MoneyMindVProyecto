@@ -1,0 +1,54 @@
+﻿<div class="dashboard">
+  <app-sidebar></app-sidebar>
+  <main class="main-content">
+    <p *ngIf="loading" role="status">Cargando tus finanzas…</p>
+    <div *ngIf="errorMessage" class="feedback" role="alert">{{ errorMessage }} <button type="button" (click)="cargarDashboard()">Reintentar</button></div>
+    <ng-container *ngIf="data as dashboard">
+      <header class="page-header">
+        <div><span class="eyebrow">TU RESUMEN</span><h1>¡Hola, {{ dashboard.user.fullName }}!</h1><p>Tu actividad financiera en {{ periodLabel(dashboard.period.start) }}.</p></div>
+        <button type="button" (click)="cargarDashboard()" [disabled]="loading">Actualizar datos</button>
+      </header>
+      <section class="toolbar" aria-label="Explorar período">
+        <div class="month-picker">
+          <button type="button" aria-label="Mes anterior" [disabled]="loading || selectedMonth <= '1900-01'" (click)="shiftMonth(-1)">←</button>
+          <label>Mes a consultar<input type="month" min="1900-01" [max]="maxMonth" [disabled]="loading" [ngModel]="selectedMonth" (ngModelChange)="selectMonth($event)" /></label>
+          <button type="button" aria-label="Mes siguiente" [disabled]="loading || selectedMonth >= maxMonth" (click)="shiftMonth(1)">→</button>
+          <button type="button" [disabled]="loading || selectedMonth === maxMonth" (click)="selectMonth(maxMonth)">Mes actual</button>
+        </div>
+        <div class="range-selector" role="group" aria-label="Meses del gráfico">
+          <button type="button" *ngFor="let months of [3, 6, 12]" [attr.aria-pressed]="range === months" (click)="range = months">{{ months }} meses</button>
+        </div>
+      </section>
+      <p class="period-note">Resumen del {{ dashboard.period.start | date:'dd/MM/yyyy' }} al {{ dashboard.period.end | date:'dd/MM/yyyy' }} · {{ dashboard.user.currency }}. Selecciona una tarjeta o un gráfico para explorar el detalle.</p>
+      <section class="summary-grid" aria-label="Resumen financiero">
+        <article class="card"><span>Saldo al cierre del período</span><strong>{{ dashboard.financial.balanceTotal | currency:dashboard.user.currency }}</strong><small>Ingresos menos gastos acumulados</small></article>
+        <button type="button" class="card metric-button" [disabled]="loading" (click)="filterType('INCOME', true)"><span>Ingresos del mes</span><strong class="income">{{ dashboard.financial.ingresos | currency:dashboard.user.currency }}</strong><small>Ver ingresos →</small></button>
+        <button type="button" class="card metric-button" [disabled]="loading" (click)="filterType('EXPENSE', true)"><span>Gastos del mes</span><strong>{{ dashboard.financial.gastos | currency:dashboard.user.currency }}</strong><small>Ver gastos →</small></button>
+        <button type="button" class="card metric-button" [disabled]="loading" (click)="filterType('', true)"><span>Balance del mes</span><strong>{{ dashboard.financial.ahorro | currency:dashboard.user.currency }}</strong><small>Ver todos los movimientos →</small></button>
+      </section>
+      <app-dashboard-charts [financial]="dashboard.financial" [currency]="dashboard.user.currency" [range]="range" [category]="selectedCategory" [busy]="loading"
+        (monthSelected)="selectMonth($event.month, $event.type, true)" (categorySelected)="selectCategory($event)"></app-dashboard-charts>
+      <section class="card movements" #movements tabindex="-1" aria-label="Detalle de movimientos" [attr.aria-busy]="loading">
+        <div class="card-header"><div><h2>Movimientos de {{ periodLabel(dashboard.period.start) }}</h2><p>{{ dashboard.financial.pagination.total }} movimientos{{ selectedCategoryName ? ' · ' + selectedCategoryName : '' }}</p></div>
+          <div class="movement-filters"><label>Mostrar<select [disabled]="loading" [ngModel]="movementType" (ngModelChange)="filterType($event)"><option value="">Todos</option><option value="INCOME">Ingresos</option><option value="EXPENSE">Gastos</option></select></label>
+          <button *ngIf="movementType || selectedCategory" type="button" [disabled]="loading" (click)="clearFilters()">Quitar filtros</button></div>
+        </div>
+        <p *ngIf="loading" role="status">Actualizando movimientos…</p>
+        <p *ngIf="!loading && !dashboard.financial.movimientos.length" class="empty">No hay movimientos para este período y filtro.</p>
+        <div class="table-wrapper" *ngIf="!loading && dashboard.financial.movimientos.length"><table><thead><tr><th>Fecha</th><th>Descripción</th><th>Categoría</th><th>Tipo</th><th>Monto</th></tr></thead><tbody><tr *ngFor="let movement of dashboard.financial.movimientos"><td>{{ movement.fecha | date:'dd/MM/yyyy' }}</td><td>{{ movement.descripcion || 'Sin descripción' }}</td><td>{{ movement.categoria }}</td><td>{{ movement.tipo === 'INCOME' ? 'Ingreso' : 'Gasto' }}</td><td [class.income]="movement.tipo === 'INCOME'">{{ movement.monto | currency:movement.moneda }}</td></tr></tbody></table></div>
+        <nav class="pagination" aria-label="Páginas de movimientos"><button type="button" [disabled]="loading || page <= 1" (click)="changePage(page - 1)">Anterior</button><span>Página {{ page }} de {{ dashboard.financial.pagination.totalPages }}</span><button type="button" [disabled]="loading || page >= dashboard.financial.pagination.totalPages" (click)="changePage(page + 1)">Siguiente</button></nav>
+      </section>
+      <h2 class="current-heading">Presupuestos, calendario y alertas</h2><p class="period-note">El calendario muestra los recordatorios del mes consultado. Los presupuestos, cuotas y alertas reflejan tu situación actual.</p>
+      <div class="details-grid">
+        <section class="card"><div class="card-header"><h2>Presupuestos vigentes</h2><a routerLink="/budgets">Ver todos →</a></div>
+          <p *ngIf="!dashboard.financial.presupuestos.length" class="empty">No hay presupuestos vigentes.</p>
+          <article class="budget" *ngFor="let budget of dashboard.financial.presupuestos"><h3>{{ budget.name }}</h3><p>{{ budget.spent | currency:budget.currency }} de {{ budget.amount | currency:budget.currency }}</p><div class="progress" role="progressbar" [attr.aria-label]="budget.name" [attr.aria-valuenow]="budgetProgress(budget.spent, budget.amount)" aria-valuemin="0" aria-valuemax="100"><div [style.width.%]="budgetProgress(budget.spent, budget.amount)"></div></div><small *ngIf="budget.spent > budget.amount">Excedido por {{ budget.spent - budget.amount | currency:budget.currency }}</small></article>
+        </section>
+        <section class="card"><div class="card-header"><h2>Cuotas pendientes</h2><a routerLink="/obligations">Ver todas →</a></div><p *ngIf="!dashboard.financial.obligaciones.length" class="empty">No tienes cuotas pendientes.</p><article class="list-row" *ngFor="let installment of dashboard.financial.obligaciones"><div><h3>{{ installment.name }}</h3><small>Cuota {{ installment.number }} · {{ installment.due_date | date:'dd/MM/yyyy' }}</small></div><strong>{{ installment.pending_amount | currency:installment.currency }}</strong></article></section>
+        <section class="card"><div class="card-header"><h2>Calendario de {{ periodLabel(dashboard.period.start) }}</h2><a routerLink="/calendar">Calendario →</a></div><p *ngIf="!dashboard.financial.eventos.length" class="empty">No hay recordatorios para este mes.</p><article class="list-row" *ngFor="let event of dashboard.financial.eventos"><h3>{{ event.title }}</h3><span>{{ event.event_date | date:'dd/MM/yyyy' }}</span></article></section>
+        <section class="card"><div class="card-header"><h2>Alertas recientes</h2><a routerLink="/alerts">Ver todas →</a></div><p *ngIf="!dashboard.financial.alertas.length" class="empty">No hay alertas registradas para mostrar.</p><article class="list-row" *ngFor="let alert of dashboard.financial.alertas"><div><h3>{{ alert.title }}</h3><p>{{ alert.message }}</p><small>{{ alert.read_at || alert.status === 'READ' ? 'Leída' : 'Sin leer' }}</small></div></article></section>
+      </div>
+    </ng-container>
+  </main>
+</div>
+

@@ -1,0 +1,18 @@
+<div class="subscription-layout">
+  <app-sidebar></app-sidebar>
+  <main class="subscriptions-page">
+    <header class="page-header"><span class="eyebrow">MONEYMIND</span><h1>Tu suscripción</h1><p>Elige el plan que acompaña tus metas.</p></header>
+    <p *ngIf="loading" role="status">Cargando tu suscripción…</p>
+    <div class="feedback error" *ngIf="errorMessage" role="alert">{{ errorMessage }} <button type="button" (click)="loadData()" [disabled]="busy || loading">Reintentar</button></div>
+    <p class="feedback success" *ngIf="successMessage" role="status">{{ successMessage }}</p>
+    <ng-container *ngIf="!loading && !errorMessage">
+      <section class="current-subscription" *ngIf="subscription as current; else noSubscription">
+        <div class="subscription-header"><div><span class="eyebrow">PLAN ACTUAL</span><h2>{{ current.plan_name }}</h2><span class="status">{{ statusLabel(current.status) }}</span></div><div class="price"><strong>{{ current.price | currency:current.currency }}</strong><span> / {{ current.billing_period === 'MONTHLY' ? 'mes' : 'año' }}</span></div></div>
+        <div class="subscription-details"><div><span>Inicio del período</span><strong>{{ current.current_period_start | date:'dd/MM/yyyy' }}</strong></div><div><span>Fin del período</span><strong>{{ current.current_period_end | date:'dd/MM/yyyy' }}</strong></div><div><span>Renovación</span><strong>{{ current.cancelled_at ? 'Desactivada' : 'Activa' }}</strong></div></div>
+        <div class="subscription-actions"><button type="button" *ngIf="!current.cancelled_at" [disabled]="busy" (click)="cancel()">Desactivar renovación</button><button type="button" *ngIf="current.cancelled_at" [disabled]="busy" (click)="reactivate()">Reactivar suscripción</button></div>
+      </section>
+      <ng-template #noSubscription><p class="current-subscription">Todavía no tienes una suscripción. Elige un plan para comenzar.</p></ng-template>
+      <section class="plans-section"><h2>Un plan para cada etapa</h2><p class="subtitle">Compara los planes disponibles</p><p class="demo-notice">Modo demostración: cambiar de plan no realiza cobros ni vincula un método de pago.</p><app-plan-cards [plans]="plans" [currentPlan]="subscription?.plan_code || ''" [busy]="busy" (choose)="changePlan($event)"></app-plan-cards><p *ngIf="!plans.length">No hay planes disponibles por el momento.</p></section>
+    </ng-container>
+  </main>
+</div>

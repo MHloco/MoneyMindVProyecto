@@ -1,0 +1,82 @@
+<div class="dashboard-layout">
+  <!-- SIDEBAR LATERAL -->
+  <app-sidebar></app-sidebar>
+
+  <!-- CONTENIDO PRINCIPAL -->
+  <main class="main-content">
+    <header class="alerts-header">
+      <h1>Alertas</h1>
+      <p>Revisa los avisos importantes sobre tus finanzas.</p>
+    </header>
+
+    <!-- Estado: Cargando -->
+    <div *ngIf="loading" class="state-card loading">
+      <div class="spinner"></div>
+      <p>Cargando alertas...</p>
+    </div>
+
+    <!-- Estado: Error -->
+    <div *ngIf="errorMessage" class="state-card error">
+      <span class="error-icon">⚠</span>
+      <p>{{ errorMessage }}</p>
+    </div>
+
+    <!-- Estado: Vacío -->
+    <div *ngIf="!loading && !errorMessage && alerts.length === 0" class="state-card empty">
+      <span class="empty-icon">🔔</span>
+      <h3>Sin alertas pendientes</h3>
+      <p>No tienes avisos financieros por el momento.</p>
+    </div>
+
+    <!-- Tabla de Alertas -->
+    <div *ngIf="!loading && alerts.length > 0" class="alerts-table-container">
+      <table class="gold-table">
+        <thead>
+          <tr>
+            <th>Alerta</th>
+            <th>Tipo</th>
+            <th>Severidad</th>
+            <th>Estado</th>
+            <th>Fecha</th>
+            <th>Acción</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let alert of alerts" [class.unread]="!alert.read_at">
+            <td class="alert-info">
+              <strong>{{ alert.title }}</strong>
+              <p>{{ alert.message }}</p>
+              <small *ngIf="alert.metadata['origin']">{{ alert.metadata['origin'] === 'rule' ? 'Regla financiera' : 'Detección por análisis · puede requerir revisión' }}</small>
+            </td>
+            <td>
+              <span class="badge-type">{{ alert.type }}</span>
+            </td>
+            <td>
+              <span class="severity" [ngClass]="getSeverityClass(alert.severity)">
+                {{ alert.severity }}
+              </span>
+            </td>
+            <td>
+              <span class="status-badge" [class.read]="alert.read_at">
+                {{ alert.read_at ? 'Leída' : 'Pendiente' }}
+              </span>
+            </td>
+            <td class="date-col">
+              {{ alert.created_at | date:'short' }}
+            </td>
+            <td class="action-col">
+              <button
+                *ngIf="!alert.read_at"
+                type="button"
+                class="btn-gold"
+                (click)="markAsRead(alert)"
+              >
+                Marcar como leída
+              </button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </main>
+</div>

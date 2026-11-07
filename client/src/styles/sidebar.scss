@@ -1,0 +1,192 @@
+/* =====================================================
+   SIDEBAR COMPONENT - MONEYMIND DARK & GOLD THEME
+====================================================== */
+
+.sidebar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  bottom: 0;
+
+  width: 265px;
+  box-sizing: border-box;
+
+  padding: 25px 14px;
+
+  display: flex;
+  flex-direction: column;
+
+  background: linear-gradient(
+    180deg,
+    rgba(14, 13, 11, 0.98),
+    rgba(10, 10, 11, 0.99)
+  );
+
+  border-right: 1px solid rgba(245, 241, 232, 0.08);
+
+  z-index: 100;
+  overflow-y: auto;
+}
+
+/* BRAND HEADER */
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 0 8px;
+  margin-bottom: 28px;
+
+  .brand-icon {
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 10px;
+    background: linear-gradient(135deg, rgba(201, 162, 75, 0.3), rgba(201, 162, 75, 0.08));
+    border: 1px solid rgba(201, 162, 75, 0.3);
+    color: var(--gold-soft);
+    font-size: 16px;
+    font-weight: 700;
+  }
+
+  h1 {
+    margin: 0;
+    color: var(--ivory);
+    font-size: 17px;
+    font-weight: 600;
+    letter-spacing: 0.3px;
+  }
+
+  span {
+    display: block;
+    color: var(--muted);
+    font-size: 10.5px;
+    margin-top: 1px;
+  }
+}
+
+/* NAVIGATION */
+.sidebar-nav {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.nav-item {
+  min-height: 42px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 0 13px;
+  border: 1px solid transparent;
+  border-radius: 10px;
+  background: transparent;
+  color: #a9a49b;
+  text-decoration: none;
+  font-size: 12px;
+  cursor: pointer;
+  transition:
+    background 0.25s ease,
+    color 0.25s ease,
+    border-color 0.25s ease,
+    transform 0.25s ease;
+
+  &:hover {
+    color: var(--ivory);
+    background: rgba(201, 162, 75, 0.055);
+    border-color: rgba(201, 162, 75, 0.12);
+    transform: translateX(2px);
+
+    .nav-icon {
+      color: var(--gold-soft);
+    }
+  }
+
+  &.active {
+    color: var(--ivory);
+    background: linear-gradient(
+      90deg,
+      rgba(201, 162, 75, 0.17),
+      rgba(201, 162, 75, 0.055)
+    );
+    border-color: rgba(201, 162, 75, 0.28);
+    box-shadow: inset 3px 0 0 var(--gold);
+
+    .nav-icon {
+      color: var(--gold-soft);
+    }
+  }
+}
+
+.nav-icon {
+  width: 21px;
+  display: flex;
+  justify-content: center;
+  color: var(--muted);
+  font-size: 14px;
+  transition: color 0.25s ease;
+}
+
+.notification-badge {
+  margin-left: auto;
+  width: 19px;
+  height: 19px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: rgba(201, 162, 75, 0.75);
+  color: var(--black);
+  font-size: 9px;
+  font-weight: 700;
+}
+
+/* PROMO CARD */
+.sidebar-promo {
+  position: relative;
+  margin-top: auto;
+  padding: 20px;
+  min-height: 135px;
+  overflow: hidden;
+  border-radius: 14px;
+  border: 1px solid rgba(201, 162, 75, 0.30);
+  background:
+    radial-gradient(
+      circle at 100% 100%,
+      rgba(201, 162, 75, 0.16),
+      transparent 48%
+    ),
+    rgba(201, 162, 75, 0.035);
+
+  &::after {
+    content: '';
+    position: absolute;
+    width: 150px;
+    height: 150px;
+    right: -85px;
+    bottom: -90px;
+    border: 1px solid rgba(201, 162, 75, 0.18);
+    border-radius: 50%;
+    pointer-events: none;
+  }
+
+  .promo-icon {
+    color: var(--gold-soft);
+    font-size: 23px;
+  }
+
+  h3 {
+    margin: 12px 0 6px;
+    color: var(--gold-soft);
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 18px;
+  }
+
+  p {
+    margin: 0;
+    color: var(--muted);
+    font-size: 10px;
+    line-height: 1.5;
+  }
+}

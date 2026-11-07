@@ -1,0 +1,76 @@
+<div class="admin-shell">
+  <header class="topbar">
+    <a routerLink="/" class="brand">MoneyMind<span>Administración</span></a>
+    <nav aria-label="Administración">
+      <a routerLink="/dashboard">Mis finanzas</a>
+      <button type="button" (click)="auth.logout()">Cerrar sesión</button>
+    </nav>
+  </header>
+  <main>
+    <div class="heading">
+      <div><p class="eyebrow">PANEL DE SUPERUSUARIO</p><h1>Una vista de tu comunidad</h1>
+        <p class="muted">Consulta las cuentas registradas y su actividad de acceso.</p></div>
+      <div class="heading-actions">
+        <button type="button" class="primary" (click)="toggleCreate()" [disabled]="creating()" [attr.aria-expanded]="showCreate()" aria-controls="create-superuser">{{ showCreate() ? 'Cerrar formulario' : 'Crear superusuario' }}</button>
+        <button class="refresh" type="button" (click)="load(page())" [disabled]="loading() || creating()">Actualizar</button>
+      </div>
+    </div>
+    @if (createSuccess()) { <p class="success" role="status">{{ createSuccess() }}</p> }
+    @if (showCreate()) {
+      <section class="details create-panel" id="create-superuser" aria-labelledby="create-title">
+        <h2 id="create-title">Nuevo superusuario</h2>
+        <p class="muted">Esta cuenta podrá consultar usuarios y crear otros superusuarios. El registro público solo crea cuentas normales.</p>
+        <form (ngSubmit)="createSuperuser()" class="create-form">
+          <label>Nombre completo<input name="newFullName" [(ngModel)]="newFullName" required maxlength="120" autocomplete="off" [disabled]="creating()" /></label>
+          <label>Correo del nuevo superusuario<input name="newEmail" type="email" [(ngModel)]="newEmail" required maxlength="254" autocomplete="off" [disabled]="creating()" /></label>
+          <label>Contraseña del nuevo superusuario<input name="newPassword" type="password" [(ngModel)]="newPassword" required minlength="12" maxlength="72" autocomplete="new-password" aria-describedby="password-help" [disabled]="creating()" /></label>
+          <label>Confirmar contraseña<input name="confirmPassword" type="password" [(ngModel)]="confirmPassword" required minlength="12" maxlength="72" autocomplete="new-password" [disabled]="creating()" /></label>
+          <p class="muted form-wide" id="password-help">Usa al menos 12 caracteres. Comparte la contraseña con el titular por un medio privado.</p>
+          @if (createError()) { <p class="error form-wide" role="alert">{{ createError() }}</p> }
+          <div class="heading-actions form-wide"><button type="submit" class="primary" [disabled]="creating() || loading()">{{ creating() ? 'Creando…' : 'Crear cuenta de superusuario' }}</button><button type="button" (click)="toggleCreate()" [disabled]="creating()">Cancelar</button></div>
+        </form>
+      </section>
+    }
+    @if (error()) { <p class="error" role="alert">{{ error() }}</p> }
+    @if (summary(); as s) {
+      <section class="metrics" aria-label="Resumen de usuarios">
+        <article><span>Cuentas registradas</span><strong>{{ s.total }}</strong><small>{{ s.new_users }} nuevas en los últimos 30 días</small></article>
+        <article><span>Cuentas activas</span><strong>{{ s.active }}</strong><small>{{ s.inactive }} inactivas · {{ s.deleted }} eliminadas</small></article>
+        <article><span>Accesos recientes</span><strong>{{ s.recent_logins }}</strong><small>Usuarios con acceso en los últimos 30 días</small></article>
+        <article><span>Correos verificados</span><strong>{{ s.verified }}</strong><small>{{ s.superusers }} superusuarios registrados</small></article>
+      </section>
+    }
+    <section class="users-panel" [attr.aria-busy]="loading()">
+      <div class="section-title"><div><h2>Usuarios</h2><p class="muted">Datos de cuenta y preferencias de cada usuario.</p></div><span class="count">{{ total() }} resultados</span></div>
+      <form class="filters" (ngSubmit)="load()">
+        <label class="search">Buscar por nombre o correo<input name="search" [(ngModel)]="search" maxlength="120" placeholder="Nombre o correo electrónico" [disabled]="loading()" /></label>
+        <label>Estado<select name="status" [(ngModel)]="status" [disabled]="loading()"><option value="all">Todos los estados</option><option value="active">Activas</option><option value="inactive">Inactivas</option><option value="deleted">Eliminadas</option></select></label>
+        <label>Rol<select name="role" [(ngModel)]="role" [disabled]="loading()"><option value="all">Todos los roles</option><option value="USER">Usuario</option><option value="SUPERUSER">Superusuario</option></select></label>
+        <button type="submit" class="primary" [disabled]="loading()">Buscar</button>
+      </form>
+      @if (loading()) { <p class="empty" role="status">Cargando información…</p> }
+      @else if (!error()) {
+        <div class="table-scroll" tabindex="0" role="region" aria-label="Listado de usuarios">
+          <table><thead><tr><th>Usuario</th><th>Rol</th><th>Estado</th><th>Registro</th><th>Último acceso</th><th><span class="sr-only">Detalles</span></th></tr></thead>
+            <tbody>@for (user of users(); track user.id) {
+              <tr><td><strong>{{ user.full_name }}</strong><span class="email">{{ user.email }}</span></td>
+                <td><span class="badge" [class.gold]="user.role === 'SUPERUSER'">{{ user.role === 'SUPERUSER' ? 'Superusuario' : 'Usuario' }}</span></td>
+                <td><span class="badge" [class.active]="user.is_active && !user.deleted_at">{{ state(user) }}</span></td>
+                <td>{{ user.created_at | date:'dd/MM/yyyy':'-0500' }}</td>
+                <td>{{ user.last_login_at ? (user.last_login_at | date:'dd/MM/yyyy HH:mm':'-0500') : 'Sin accesos' }}</td>
+                <td><button type="button" (click)="selected.set(user)" [attr.aria-label]="'Ver detalles de ' + user.full_name">Ver detalles</button></td></tr>
+            } @empty { <tr><td colspan="6" class="empty">No hay usuarios que coincidan con estos filtros.</td></tr> }</tbody>
+          </table>
+        </div>
+        <div class="pagination"><span>Página {{ page() }} de {{ pages }}</span><div><button type="button" [disabled]="page() <= 1" (click)="load(page() - 1)">Anterior</button><button type="button" [disabled]="page() >= pages" (click)="load(page() + 1)">Siguiente</button></div></div>
+      }
+    </section>
+    @if (selected(); as user) {
+      <section class="details" aria-label="Detalles de usuario" aria-live="polite">
+        <div class="section-title"><h2>{{ user.full_name }}</h2><button type="button" (click)="selected.set(null)">Cerrar detalles</button></div>
+        <dl><div><dt>Correo</dt><dd>{{ user.email }}</dd></div><div><dt>Verificación de correo</dt><dd>{{ user.email_verified_at ? 'Verificado' : 'Pendiente' }}</dd></div><div><dt>Moneda</dt><dd>{{ user.currency }}</dd></div><div><dt>Zona horaria</dt><dd>{{ user.timezone }}</dd></div><div><dt>Idioma y región</dt><dd>{{ user.locale }}</dd></div><div><dt>Estado de la cuenta</dt><dd>{{ state(user) }}</dd></div></dl>
+      </section>
+    }
+    <p class="footnote">Las métricas excluyen cuentas eliminadas, salvo el contador de eliminadas. Horarios de acceso en Lima.</p>
+  </main>
+</div>

@@ -1,0 +1,854 @@
+
+
+/* =========================================================
+LAYOUT
+========================================================= */
+
+.dashboard-layout {
+display: flex;
+
+min-height: 100vh;
+
+background-color: var(--black, #0a0a0b);
+
+color: var(--ivory, #f5f1e8);
+}
+
+.main-content {
+margin-left: 265px;
+
+flex: 1;
+
+padding: 30px 40px;
+
+min-height: 100vh;
+
+box-sizing: border-box;
+}
+
+/* =========================================================
+CABECERA
+========================================================= */
+
+.budgets-header {
+display: flex;
+
+justify-content: space-between;
+
+align-items: center;
+
+margin-bottom: 25px;
+
+gap: 20px;
+}
+
+.budgets-header h1 {
+font-size: 28px;
+
+font-weight: 700;
+
+color: var(--gold-soft, #e2c074);
+
+margin: 0 0 8px 0;
+}
+
+.budgets-header p {
+font-size: 14px;
+
+color: var(--muted, #8a857b);
+
+margin: 0;
+}
+
+/* =========================================================
+BOTÓN DORADO
+========================================================= */
+
+.btn-gold {
+background: linear-gradient(
+135deg,
+#c9a24b,
+#997a15
+);
+
+color: #0a0a0b;
+
+border: none;
+
+padding: 8px 14px;
+
+border-radius: 6px;
+
+font-weight: 600;
+
+font-size: 12px;
+
+cursor: pointer;
+
+transition: opacity 0.2s;
+}
+
+.btn-gold:hover {
+opacity: 0.9;
+}
+
+/* =========================================================
+FORMULARIO
+========================================================= */
+
+.budget-form {
+background: rgba(14, 13, 11, 0.95);
+
+border: 1px solid
+rgba(201, 162, 75, 0.25);
+
+border-radius: 12px;
+
+padding: 24px;
+
+margin-bottom: 25px;
+}
+
+/* Encabezado */
+
+.form-heading {
+display: flex;
+
+align-items: center;
+
+gap: 12px;
+
+margin-bottom: 22px;
+
+padding-bottom: 18px;
+
+border-bottom: 1px solid
+rgba(245, 241, 232, 0.06);
+}
+
+.form-icon {
+width: 40px;
+
+height: 40px;
+
+display: flex;
+
+align-items: center;
+
+justify-content: center;
+
+border-radius: 8px;
+
+background:
+rgba(201, 162, 75, 0.08);
+
+border: 1px solid
+rgba(201, 162, 75, 0.2);
+
+color: var(--gold-soft, #e2c074);
+
+font-size: 20px;
+}
+
+.form-heading h2 {
+margin: 0 0 4px 0;
+
+font-size: 19px;
+
+color: var(--ivory, #f5f1e8);
+}
+
+.form-heading p {
+margin: 0;
+
+font-size: 12px;
+
+color: var(--muted, #8a857b);
+}
+
+/* Grid */
+
+.form-grid {
+display: grid;
+
+grid-template-columns:
+repeat(2, minmax(0, 1fr));
+
+gap: 16px;
+}
+
+/* Campos */
+
+.form-group {
+display: flex;
+
+flex-direction: column;
+
+gap: 6px;
+}
+
+.form-group label {
+font-size: 13px;
+
+font-weight: 600;
+
+color: var(--ivory, #f5f1e8);
+}
+
+.form-group input {
+width: 100%;
+
+box-sizing: border-box;
+
+padding: 10px 12px;
+
+background: rgba(245, 241, 232, 0.03);
+
+border: 1px solid
+rgba(245, 241, 232, 0.13);
+
+border-radius: 7px;
+
+color: var(--ivory, #f5f1e8);
+
+font-size: 13px;
+
+outline: none;
+}
+
+.form-group input:focus {
+border-color:
+rgba(201, 162, 75, 0.6);
+
+box-shadow:
+0 0 0 2px
+rgba(201, 162, 75, 0.08);
+}
+
+.form-group input::placeholder {
+color: #625e56;
+}
+
+.form-group small {
+color: var(--muted, #8a857b);
+
+font-size: 11px;
+}
+
+/* Input dinero */
+
+.input-money {
+position: relative;
+
+display: flex;
+
+align-items: center;
+}
+
+.input-money span {
+position: absolute;
+
+left: 12px;
+
+color: var(--gold-soft, #e2c074);
+
+font-size: 13px;
+
+font-weight: 600;
+
+z-index: 1;
+}
+
+.input-money input {
+padding-left: 35px;
+}
+
+/* =========================================================
+ROLLOVER
+========================================================= */
+
+.rollover-option {
+margin-top: 18px;
+
+padding-top: 16px;
+
+border-top: 1px solid
+rgba(245, 241, 232, 0.06);
+}
+
+.rollover-option label {
+display: flex;
+
+align-items: center;
+
+gap: 8px;
+
+color: var(--ivory, #f5f1e8);
+
+font-size: 13px;
+
+cursor: pointer;
+}
+
+.rollover-option input {
+accent-color: #c9a24b;
+}
+
+/* =========================================================
+ERROR
+========================================================= */
+
+.error-message {
+margin: 15px 0 0;
+
+padding: 10px 12px;
+
+background:
+rgba(239, 68, 68, 0.07);
+
+border: 1px solid
+rgba(239, 68, 68, 0.2);
+
+border-radius: 7px;
+
+color: #ef7777;
+
+font-size: 12px;
+}
+
+/* =========================================================
+ACCIONES
+========================================================= */
+
+.form-actions {
+display: flex;
+
+justify-content: flex-end;
+
+gap: 10px;
+
+margin-top: 20px;
+}
+
+.btn-cancel {
+background: transparent;
+
+color: var(--muted, #8a857b);
+
+border: 1px solid
+rgba(245, 241, 232, 0.12);
+
+padding: 8px 14px;
+
+border-radius: 6px;
+
+font-size: 12px;
+
+cursor: pointer;
+}
+
+.btn-cancel:hover {
+color: var(--ivory, #f5f1e8);
+
+border-color:
+rgba(245, 241, 232, 0.25);
+}
+
+/* =========================================================
+ESTADOS
+========================================================= */
+
+.state-card {
+background:
+rgba(201, 162, 75, 0.03);
+
+border: 1px solid
+rgba(201, 162, 75, 0.2);
+
+border-radius: 12px;
+
+padding: 40px;
+
+text-align: center;
+
+color: var(--ivory, #f5f1e8);
+}
+
+.state-card h3 {
+color: var(--gold-soft, #e2c074);
+
+margin: 10px 0 5px;
+}
+
+.state-card p {
+color: var(--muted, #8a857b);
+
+margin: 0;
+
+font-size: 13px;
+}
+
+.empty-icon {
+display: block;
+
+font-size: 32px;
+
+color: var(--gold-soft, #e2c074);
+
+margin-bottom: 10px;
+}
+
+/* Spinner */
+
+.spinner {
+width: 25px;
+
+height: 25px;
+
+margin: 0 auto 12px;
+
+border: 3px solid
+rgba(201, 162, 75, 0.15);
+
+border-top-color: #c9a24b;
+
+border-radius: 50%;
+
+animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+
+to {
+transform: rotate(360deg);
+}
+
+}
+
+/* =========================================================
+TABLA
+========================================================= */
+
+.budgets-table-container {
+background: rgba(14, 13, 11, 0.95);
+
+border: 1px solid
+rgba(201, 162, 75, 0.25);
+
+border-radius: 12px;
+
+overflow: hidden;
+}
+
+/* Cabecera */
+
+.table-heading {
+display: flex;
+
+justify-content: space-between;
+
+align-items: center;
+
+padding: 18px 20px;
+
+border-bottom: 1px solid
+rgba(201, 162, 75, 0.18);
+}
+
+.table-heading h2 {
+margin: 0 0 4px 0;
+
+font-size: 17px;
+
+color: var(--ivory, #f5f1e8);
+}
+
+.table-heading p {
+margin: 0;
+
+font-size: 12px;
+
+color: var(--muted, #8a857b);
+}
+
+.budget-counter {
+padding: 5px 9px;
+
+border-radius: 5px;
+
+background:
+rgba(201, 162, 75, 0.08);
+
+border: 1px solid
+rgba(201, 162, 75, 0.2);
+
+color: var(--gold-soft, #e2c074);
+
+font-size: 11px;
+}
+
+/* Scroll */
+
+.table-scroll {
+overflow-x: auto;
+}
+
+/* Tabla */
+
+.gold-table {
+width: 100%;
+
+min-width: 900px;
+
+border-collapse: collapse;
+
+color: var(--ivory, #f5f1e8);
+}
+
+.gold-table th,
+.gold-table td {
+padding: 14px 16px;
+
+text-align: left;
+}
+
+.gold-table thead {
+background:
+rgba(201, 162, 75, 0.08);
+
+border-bottom: 1px solid
+rgba(201, 162, 75, 0.25);
+}
+
+.gold-table th {
+color: var(--gold-soft, #e2c074);
+
+font-size: 11px;
+
+text-transform: uppercase;
+
+letter-spacing: 0.5px;
+
+white-space: nowrap;
+}
+
+.gold-table tbody tr {
+border-bottom: 1px solid
+rgba(245, 241, 232, 0.05);
+
+transition: background 0.2s;
+}
+
+.gold-table tbody tr:hover {
+background:
+rgba(201, 162, 75, 0.04);
+}
+
+/* =========================================================
+DATOS
+========================================================= */
+
+.budget-name strong {
+display: block;
+
+color: var(--ivory, #f5f1e8);
+
+font-size: 13px;
+
+margin-bottom: 4px;
+}
+
+.budget-name small {
+color: var(--muted, #8a857b);
+
+font-size: 10px;
+}
+
+.category-badge {
+display: inline-block;
+
+padding: 5px 8px;
+
+background:
+rgba(201, 162, 75, 0.07);
+
+border: 1px solid
+rgba(201, 162, 75, 0.15);
+
+border-radius: 5px;
+
+color: #d8bd7a;
+
+font-size: 11px;
+
+white-space: nowrap;
+}
+
+.money {
+white-space: nowrap;
+
+font-size: 12px;
+}
+
+.money strong {
+color: var(--ivory, #f5f1e8);
+
+font-size: 13px;
+}
+
+.money small {
+color: var(--muted, #8a857b);
+
+margin-left: 2px;
+}
+
+.remaining {
+color: #70cf8c;
+
+font-weight: 600;
+}
+
+.remaining.negative {
+color: #ef7777;
+}
+
+/* =========================================================
+PROGRESO
+========================================================= */
+
+.progress-cell {
+min-width: 120px;
+}
+
+.progress {
+width: 100%;
+
+height: 7px;
+
+background:
+rgba(245, 241, 232, 0.08);
+
+border-radius: 999px;
+
+overflow: hidden;
+
+margin-bottom: 5px;
+}
+
+.progress-bar {
+height: 100%;
+
+border-radius: 999px;
+
+background:
+linear-gradient(
+90deg,
+#6fb889,
+#c9a24b
+);
+
+transition: width 0.3s ease;
+}
+
+.progress-bar.warning {
+background:
+linear-gradient(
+90deg,
+#c9a24b,
+#e2a83b
+);
+}
+
+.progress-bar.exceeded {
+background:
+linear-gradient(
+90deg,
+#d75b5b,
+#ef4444
+);
+}
+
+.progress-cell small {
+color: var(--muted, #8a857b);
+
+font-size: 10px;
+}
+
+/* =========================================================
+ESTADO
+========================================================= */
+
+.status {
+display: inline-block;
+
+padding: 5px 9px;
+
+border-radius: 5px;
+
+font-size: 10px;
+
+font-weight: 600;
+
+white-space: nowrap;
+}
+
+.status.normal {
+color: #70cf8c;
+
+background:
+rgba(34, 197, 94, 0.08);
+
+border: 1px solid
+rgba(34, 197, 94, 0.15);
+}
+
+.status.warning {
+color: #e7ae4c;
+
+background:
+rgba(245, 158, 11, 0.08);
+
+border: 1px solid
+rgba(245, 158, 11, 0.15);
+}
+
+.status.exceeded {
+color: #ef7777;
+
+background:
+rgba(239, 68, 68, 0.08);
+
+border: 1px solid
+rgba(239, 68, 68, 0.15);
+}
+
+/* =========================================================
+ELIMINAR
+========================================================= */
+
+.action-cell {
+text-align: center !important;
+}
+
+.delete-button {
+width: 28px;
+
+height: 28px;
+
+background: transparent;
+
+color: #ef7777;
+
+border: 1px solid
+rgba(239, 68, 68, 0.15);
+
+border-radius: 5px;
+
+cursor: pointer;
+
+font-size: 17px;
+
+line-height: 1;
+
+transition: background 0.2s;
+}
+
+.delete-button:hover {
+background:
+rgba(239, 68, 68, 0.1);
+}
+
+/* =========================================================
+RESPONSIVE
+========================================================= */
+
+@media (max-width: 900px) {
+
+.main-content {
+margin-left: 265px;
+
+padding: 25px;
+
+}
+
+.form-grid {
+grid-template-columns: 1fr;
+}}
+
+@media (max-width: 768px) {
+
+.main-content {
+margin-left: 0;
+
+
+padding: 20px 16px;
+
+}
+
+.budgets-header {
+align-items: flex-start;
+
+flex-direction: column;
+
+}
+
+.budgets-header .btn-gold {
+width: 100%;
+}
+
+.budget-form {
+padding: 18px;
+}
+
+.table-heading {
+align-items: flex-start;
+
+flex-direction: column;
+
+gap: 10px;
+
+}
+}
+
+.form-group {
+
+  select {
+    width: 100%;
+    box-sizing: border-box;
+
+    padding: 11px 12px;
+
+    border: 1px solid rgba(245, 241, 232, 0.12);
+    border-radius: 7px;
+
+    outline: none;
+
+    background: #0d0d0d;
+    color: var(--ivory, #f5f1e8);
+
+    font-size: 13px;
+
+    cursor: pointer;
+
+    &:focus {
+      border-color: rgba(201, 162, 75, 0.6);
+    }
+
+    &:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+  }
+}
+
+
+.field-warning {
+  display: block;
+  margin-top: 6px;
+
+  color: #f59e0b;
+  font-size: 11px;
+}
+
+/* Subtítulos del tema MoneyMind. */
+:host :is(h2, h3, h4, .page-header p, .modal-subtitle, .subtitle, .info-head p) { color: var(--gold-soft); }

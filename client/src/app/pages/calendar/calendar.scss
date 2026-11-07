@@ -1,0 +1,403 @@
+
+
+.dashboard-layout {
+  display: flex;
+  min-height: 100vh;
+  background-color: var(--black);
+  color: var(--ivory);
+}
+
+.main-content {
+  flex: 1;
+  min-width: 0;
+  margin-left: 265px;
+  padding: 32px;
+}
+
+.calendar-page {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  max-width: 1200px;
+  margin-inline: auto;
+}
+
+.page-header {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  justify-content: space-between;
+  align-items: center;
+
+  h1 {
+    font-size: 28px;
+    font-weight: 700;
+    color: var(--ivory);
+  }
+
+  p {
+    margin-top: 6px;
+    color: var(--muted);
+  }
+}
+
+.add-button {
+  padding: 10px 20px;
+  border: 1px solid var(--gold);
+  border-radius: 8px;
+  background: var(--gold);
+  color: var(--black);
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+
+  &:hover:not(:disabled) {
+    background: var(--gold-soft);
+    border-color: var(--gold-soft);
+  }
+
+  &:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+  }
+}
+
+.calendar-container {
+  background: var(--coal);
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  padding: 24px;
+}
+
+.calendar-header {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 24px;
+  margin-bottom: 24px;
+
+  h2 {
+    min-width: 200px;
+    text-align: center;
+    color: var(--gold);
+    font-size: 20px;
+    font-weight: 600;
+  }
+}
+
+.month-button {
+  width: 36px;
+  height: 36px;
+  border: 1px solid var(--line);
+  border-radius: 50%;
+  background: transparent;
+  color: var(--ivory);
+  font-size: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background 0.2s;
+
+  &:hover {
+    background: rgba(201, 162, 75, 0.15);
+    color: var(--gold);
+  }
+}
+
+.calendar-grid {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.weekday {
+  text-align: center;
+  font-weight: 600;
+  padding: 12px;
+  color: var(--gold-soft);
+  text-transform: uppercase;
+  font-size: 13px;
+  letter-spacing: 0.5px;
+}
+
+.calendar-day {
+  min-height: 90px;
+  border-radius: 10px;
+  padding: 10px;
+  cursor: pointer;
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid var(--line);
+  transition: all 0.2s;
+
+  &:hover:not(.empty) {
+    border-color: var(--gold-soft);
+    background: rgba(201, 162, 75, 0.08);
+  }
+
+  &.selected {
+    background: rgba(201, 162, 75, 0.2);
+    border-color: var(--gold);
+    
+    .day-number {
+      color: var(--gold);
+    }
+  }
+
+  &.has-event {
+    border-bottom: 2px solid var(--gold);
+  }
+
+  &.empty {
+    background: transparent;
+    border-color: transparent;
+    cursor: default;
+  }
+}
+
+.day-number {
+  font-weight: 600;
+  color: var(--ivory);
+}
+
+.event-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  margin-top: 8px;
+}
+
+.selected-day,
+.reminder-form {
+  background: var(--coal);
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  padding: 24px;
+}
+
+.selected-day-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+
+  h3 {
+    color: var(--ivory);
+    font-size: 18px;
+  }
+
+  span {
+    color: var(--muted);
+    font-size: 14px;
+  }
+
+  button {
+    border: 1px solid var(--gold);
+    background: transparent;
+    color: var(--gold);
+    padding: 6px 14px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 500;
+
+    &:hover {
+      background: var(--gold);
+      color: var(--black);
+    }
+  }
+}
+
+.event {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--line);
+
+  &:last-child {
+    border-bottom: none;
+  }
+}
+
+.event-color {
+  width: 4px;
+  height: 36px;
+  border-radius: 2px;
+}
+
+.event-content {
+  flex: 1;
+
+  strong {
+    color: var(--ivory);
+  }
+
+  p {
+    margin: 4px 0 0;
+    color: var(--muted);
+    font-size: 14px;
+  }
+}
+
+.delete-button {
+  border: none;
+  background: transparent;
+  color: #ef4444;
+  cursor: pointer;
+  font-size: 13px;
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  &:hover:not(:disabled) {
+    text-decoration: underline;
+  }
+}
+
+.reminder-form {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+
+  h3 {
+    color: var(--gold);
+  }
+
+  p {
+    color: var(--muted);
+    margin-bottom: 8px;
+  }
+
+  label {
+    color: var(--ivory);
+    font-size: 14px;
+  }
+
+  input[type="text"],
+  textarea {
+    background: var(--black);
+    border: 1px solid var(--line);
+    color: var(--ivory);
+    padding: 10px 14px;
+    border-radius: 8px;
+    outline: none;
+
+    &:focus {
+      border-color: var(--gold);
+    }
+  }
+
+  input[type="color"] {
+    background: transparent;
+    border: none;
+    cursor: pointer;
+  }
+
+  textarea {
+    min-height: 80px;
+    resize: vertical;
+  }
+}
+
+.form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-top: 12px;
+
+  button {
+    padding: 8px 16px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 500;
+
+    &[type="button"]:first-child {
+      background: transparent;
+      border: 1px solid var(--line);
+      color: var(--muted);
+
+      &:hover {
+        color: var(--ivory);
+      }
+    }
+
+    &[type="button"]:last-child {
+      background: var(--gold);
+      border: 1px solid var(--gold);
+      color: var(--black);
+
+      &:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+      }
+    }
+  }
+}
+
+.loading,
+.empty-events {
+  padding: 24px;
+  text-align: center;
+  color: var(--muted);
+}
+
+.error {
+  padding: 16px;
+  text-align: center;
+  color: #f87171;
+  background: rgba(239, 68, 68, 0.1);
+  border-radius: 8px;
+  margin-bottom: 16px;
+}
+
+@media (max-width: 768px) {
+  .dashboard-layout {
+    flex-direction: column;
+  }
+
+  .sidebar {
+    position: static;
+    width: 100%;
+  }
+
+  .main-content {
+    margin-left: 0;
+    padding: 20px 12px;
+  }
+
+  .calendar-container {
+    padding: 12px;
+  }
+
+  .calendar-header {
+    gap: 12px;
+
+    h2 {
+      min-width: 0;
+      font-size: 18px;
+    }
+  }
+
+  .month-button {
+    flex-shrink: 0;
+  }
+
+  .calendar-grid {
+    gap: 4px;
+  }
+
+  .weekday {
+    padding: 8px 0;
+    font-size: 11px;
+  }
+
+  .calendar-day {
+    min-height: 60px;
+    padding: 6px;
+  }
+}
+
+/* Subtítulos del tema MoneyMind. */
+:host :is(h2, h3, h4, .page-header p, .modal-subtitle, .subtitle, .info-head p) { color: var(--gold-soft); }

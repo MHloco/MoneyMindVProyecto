@@ -1,0 +1,29 @@
+# A separate, disposable stack. Never points to the existing local database.
+services:
+  web:
+    ports: !override
+      - "127.0.0.1:8080:8080"
+  api:
+    environment:
+      DB_SSL: "false"
+      TRUST_PROXY_HOPS: "1"
+    depends_on:
+      postgres:
+        condition: service_healthy
+  postgres:
+    image: postgres:18-bookworm
+    environment:
+      POSTGRES_DB: moneymind
+      POSTGRES_USER: moneymind
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Define POSTGRES_PASSWORD}
+    volumes:
+      - test-db:/var/lib/postgresql
+      - ./deploy/db:/docker-entrypoint-initdb.d:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U moneymind -d moneymind"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+    restart: unless-stopped
+volumes:
+  test-db:

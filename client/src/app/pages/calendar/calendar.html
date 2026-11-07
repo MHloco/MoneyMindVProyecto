@@ -1,0 +1,156 @@
+<div class="dashboard-layout">
+  <!-- SIDEBAR LATERAL -->
+  <app-sidebar></app-sidebar>
+
+  <!-- CONTENIDO PRINCIPAL -->
+  <main class="main-content">
+    <div class="calendar-page">
+      <div class="page-header">
+        <div>
+          <h1>Calendario</h1>
+          <p>Organiza tus recordatorios y fechas importantes.</p>
+        </div>
+
+        <button
+          type="button"
+          class="add-button"
+          (click)="openReminderForm()"
+          [disabled]="!selectedDate">
+          + Recordatorio
+        </button>
+      </div>
+
+      <div class="calendar-container">
+        <div class="calendar-header">
+          <button
+            type="button"
+            class="month-button"
+            (click)="previousMonth()">
+            ‹
+          </button>
+
+          <h2>{{ monthName | titlecase }}</h2>
+
+          <button
+            type="button"
+            class="month-button"
+            (click)="nextMonth()">
+            ›
+          </button>
+        </div>
+
+        <div *ngIf="loading" class="loading">
+          Cargando calendario...
+        </div>
+
+        <div *ngIf="errorMessage" class="error" role="alert">
+          {{ errorMessage }}
+        </div>
+
+        <div *ngIf="!loading" class="calendar-grid">
+          <div class="weekday">Lun</div>
+          <div class="weekday">Mar</div>
+          <div class="weekday">Mié</div>
+          <div class="weekday">Jue</div>
+          <div class="weekday">Vie</div>
+          <div class="weekday">Sáb</div>
+          <div class="weekday">Dom</div>
+
+          <div
+            *ngFor="let day of calendarDays"
+            class="calendar-day"
+            [class.empty]="day === null"
+            [class.selected]="day !== null && isSelected(day)"
+            [class.has-event]="day !== null && hasEvent(day)"
+            (click)="day !== null && selectDate(day)">
+            
+            <ng-container *ngIf="day !== null">
+              <span class="day-number">{{ day }}</span>
+              <div
+                *ngFor="let event of getEventsForDay(day)"
+                class="event-dot"
+                [style.background]="event.color">
+              </div>
+            </ng-container>
+          </div>
+        </div>
+      </div>
+
+      <!-- DETALLES DEL DÍA SELECCIONADO -->
+      <div *ngIf="selectedDate" class="selected-day">
+        <div class="selected-day-header">
+          <div>
+            <h3>{{ formatSelectedDate() }}</h3>
+            <span>Recordatorios</span>
+          </div>
+
+          <button type="button" (click)="openReminderForm()">
+            + Añadir
+          </button>
+        </div>
+
+        <div
+          *ngIf="getEventsForDay(selectedDate.getDate()).length === 0"
+          class="empty-events">
+          No hay recordatorios para este día.
+        </div>
+
+        <div
+          *ngFor="let event of getEventsForDay(selectedDate.getDate())"
+          class="event">
+          <div
+            class="event-color"
+            [style.background]="event.color">
+          </div>
+
+          <div class="event-content">
+            <strong>{{ event.title }}</strong>
+            <p *ngIf="event.description">{{ event.description }}</p>
+          </div>
+
+          <button
+            type="button"
+            class="delete-button"
+            [disabled]="deletingEventId !== null"
+            (click)="deleteReminder(event)">
+            {{ deletingEventId === event.id ? 'Eliminando...' : 'Eliminar' }}
+          </button>
+        </div>
+      </div>
+
+      <!-- FORMULARIO DE NUEVO RECORDATORIO -->
+      <div *ngIf="showForm" class="reminder-form">
+        <h3>Nuevo recordatorio</h3>
+        <p>{{ formatSelectedDate() }}</p>
+
+        <label>Título</label>
+        <input
+          type="text"
+          [(ngModel)]="title"
+          placeholder="Ej. Pagar tarjeta"
+        />
+
+        <label>Descripción</label>
+        <textarea
+          [(ngModel)]="description"
+          placeholder="Descripción opcional">
+        </textarea>
+
+        <label>Color</label>
+        <input type="color" [(ngModel)]="color" />
+
+        <div class="form-actions">
+          <button type="button" (click)="showForm = false">
+            Cancelar
+          </button>
+          <button
+            type="button"
+            (click)="saveReminder()"
+            [disabled]="!title.trim()">
+            Guardar
+          </button>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>

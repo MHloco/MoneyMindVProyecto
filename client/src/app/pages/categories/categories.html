@@ -1,0 +1,433 @@
+<div class="categories-layout">
+
+  <!-- SIDEBAR -->
+  <app-sidebar></app-sidebar>
+
+
+  <!-- CONTENIDO -->
+  <main class="categories-page">
+
+    <!-- HEADER -->
+    <div class="page-header">
+
+      <div>
+        <h1>Categorías</h1>
+
+        <p>
+          Organiza tus ingresos y gastos.
+        </p>
+      </div>
+
+      <button
+        type="button"
+        class="primary-button"
+        (click)="openCreateForm()">
+
+        + Nueva categoría
+
+      </button>
+
+    </div>
+
+
+    <!-- TABS -->
+    <div class="tabs">
+
+      <button
+        type="button"
+        [class.active]="activeTab === 'INCOME'"
+        (click)="changeTab('INCOME')">
+
+        Ingresos
+
+      </button>
+
+      <button
+        type="button"
+        [class.active]="activeTab === 'EXPENSE'"
+        (click)="changeTab('EXPENSE')">
+
+        Gastos
+
+      </button>
+
+    </div>
+
+
+    <!-- LOADING -->
+    <div
+      *ngIf="loading"
+      class="loading">
+
+      Cargando categorías...
+
+    </div>
+
+
+    <!-- ERROR -->
+    <div
+      *ngIf="errorMessage"
+      class="error">
+
+      {{ errorMessage }}
+
+    </div>
+
+
+    <ng-container *ngIf="!loading && !errorMessage">
+
+      <!-- CATEGORÍAS DEL SISTEMA -->
+      <section class="section">
+
+        <div class="section-header">
+
+          <div>
+            <h2>Categorías del sistema</h2>
+
+            <p>
+              Categorías predeterminadas disponibles para todos.
+            </p>
+          </div>
+
+        </div>
+
+
+        <div
+          *ngIf="systemCategories.length > 0"
+          class="system-grid">
+
+          <div
+            *ngFor="let category of systemCategories"
+            class="system-card">
+
+            <div
+              class="category-icon"
+              [style.background]="category.color">
+
+              {{ category.icon }}
+
+            </div>
+
+            <div class="system-card-info">
+
+              <strong>
+                {{ category.name }}
+              </strong>
+
+              <span>
+                Predeterminada
+              </span>
+
+            </div>
+
+          </div>
+
+        </div>
+
+
+        <div
+          *ngIf="systemCategories.length === 0"
+          class="empty">
+
+          No hay categorías del sistema disponibles.
+
+        </div>
+
+      </section>
+
+
+      <!-- CATEGORÍAS DEL USUARIO -->
+      <section class="section">
+
+        <div class="section-header">
+
+          <div>
+            <h2>Mis categorías</h2>
+
+            <p>
+              Categorías personalizadas de tu cuenta.
+            </p>
+          </div>
+
+          <button
+            type="button"
+            class="secondary-button"
+            (click)="openCreateForm()">
+
+            + Crear
+
+          </button>
+
+        </div>
+
+
+        <div
+          *ngIf="userCategories.length === 0"
+          class="empty">
+
+          Todavía no tienes categorías personalizadas.
+
+        </div>
+
+
+        <div
+          *ngIf="userCategories.length > 0"
+          class="category-tree">
+
+          <ng-container
+            *ngFor="let category of rootUserCategories">
+
+            <div class="category-node">
+
+              <div class="category-row">
+
+                <div class="category-info">
+
+                  <div
+                    class="category-color"
+                    [style.background]="category.color">
+                  </div>
+
+                  <span class="category-icon-text">
+                    {{ category.icon }}
+                  </span>
+
+                  <strong>
+                    {{ category.name }}
+                  </strong>
+
+                </div>
+
+
+                <div class="category-actions">
+
+                  <button
+                    type="button"
+                    (click)="openCreateForm(category.id)">
+
+                    + Subcategoría
+
+                  </button>
+
+                  <button
+                    type="button"
+                    (click)="openEditForm(category)">
+
+                    Editar
+
+                  </button>
+
+                  <button
+                    type="button"
+                    class="delete"
+                    (click)="deleteCategory(category)">
+
+                    Eliminar
+
+                  </button>
+
+                </div>
+
+              </div>
+
+
+              <!-- SUBCATEGORÍAS -->
+              <div
+                *ngFor="let child of getChildren(category.id)"
+                class="subcategory-node">
+
+                <div class="category-row">
+
+                  <div class="category-info">
+
+                    <div
+                      class="category-color"
+                      [style.background]="child.color">
+                    </div>
+
+                    <span class="category-icon-text">
+                      {{ child.icon }}
+                    </span>
+
+                    <span>
+                      {{ child.name }}
+                    </span>
+
+                  </div>
+
+
+                  <div class="category-actions">
+
+                    <button
+                      type="button"
+                      (click)="openEditForm(child)">
+
+                      Editar
+
+                    </button>
+
+                    <button
+                      type="button"
+                      class="delete"
+                      (click)="deleteCategory(child)">
+
+                      Eliminar
+
+                    </button>
+
+                  </div>
+
+                </div>
+
+              </div>
+
+            </div>
+
+          </ng-container>
+
+        </div>
+
+      </section>
+
+    </ng-container>
+
+
+    <!-- MODAL -->
+    <div
+      *ngIf="showForm"
+      class="modal-backdrop"
+      (click)="closeForm()">
+
+      <div
+        class="form-card"
+        (click)="$event.stopPropagation()">
+
+        <div class="form-header">
+
+          <div>
+            <h2>
+              {{ editingCategory
+                ? 'Editar categoría'
+                : 'Nueva categoría' }}
+            </h2>
+
+            <p>
+              Configura los datos de la categoría.
+            </p>
+          </div>
+
+          <button
+            type="button"
+            class="close-button"
+            (click)="closeForm()">
+
+            ×
+
+          </button>
+
+        </div>
+
+
+        <div class="form-field">
+
+          <label>
+            Nombre
+          </label>
+
+          <input
+            type="text"
+            [(ngModel)]="name"
+            placeholder="Ej. Alimentación">
+
+        </div>
+
+
+        <div class="form-field">
+
+          <label>
+            Ícono
+          </label>
+
+          <input
+            type="text"
+            [(ngModel)]="icon"
+            placeholder="category">
+
+        </div>
+
+
+        <div class="form-field">
+
+          <label>
+            Color
+          </label>
+
+          <div class="color-input">
+
+            <input
+              type="color"
+              [(ngModel)]="color">
+
+            <span>
+              {{ color }}
+            </span>
+
+          </div>
+
+        </div>
+
+
+        <div class="form-field">
+
+          <label>
+            Categoría padre
+          </label>
+
+          <select
+            [(ngModel)]="parentId">
+
+            <option [ngValue]="null">
+              Sin categoría padre
+            </option>
+
+            <option
+              *ngFor="let category of userCategories"
+              [ngValue]="category.id"
+              [disabled]="editingCategory?.id === category.id">
+
+              {{ category.name }}
+
+            </option>
+
+          </select>
+
+        </div>
+
+
+        <div class="form-actions">
+
+          <button
+            type="button"
+            class="cancel-button"
+            (click)="closeForm()">
+
+            Cancelar
+
+          </button>
+
+          <button
+            type="button"
+            class="primary-button"
+            (click)="saveCategory()"
+            [disabled]="!name.trim()">
+
+            {{ editingCategory
+              ? 'Guardar cambios'
+              : 'Crear categoría' }}
+
+          </button>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>

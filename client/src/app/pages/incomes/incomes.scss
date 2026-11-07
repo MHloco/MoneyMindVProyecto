@@ -1,0 +1,343 @@
+﻿@use '@angular/material' as mat;
+
+:host {
+  display: block;
+  color-scheme: dark;
+  background: var(--black);
+  color: var(--ivory);
+
+  @include mat.form-field-overrides(
+    (
+      outlined-outline-color: rgba(245, 241, 232, 0.14),
+      outlined-hover-outline-color: var(--gold-soft),
+      outlined-focus-outline-color: var(--gold),
+      outlined-label-text-color: var(--muted),
+      outlined-hover-label-text-color: var(--ivory),
+      outlined-focus-label-text-color: var(--gold-soft),
+      outlined-input-text-color: var(--ivory),
+      outlined-caret-color: var(--gold),
+    )
+  );
+  @include mat.select-overrides(
+    (
+      enabled-trigger-text-color: var(--ivory),
+      enabled-arrow-color: var(--muted),
+      focused-arrow-color: var(--gold),
+    )
+  );
+}
+
+::ng-deep .incomes-select-panel {
+  @include mat.select-overrides(
+    (
+      panel-background-color: var(--coal),
+    )
+  );
+  @include mat.option-overrides(
+    (
+      label-text-color: var(--ivory),
+      selected-state-label-text-color: var(--gold-soft),
+      selected-state-layer-color: rgba(201, 162, 75, 0.15),
+      hover-state-layer-color: rgba(201, 162, 75, 0.08),
+      focus-state-layer-color: rgba(201, 162, 75, 0.12),
+    )
+  );
+}
+.dashboard-layout {
+  display: flex;
+  min-height: 100vh;
+}
+.incomes-page {
+  flex: 1;
+  min-width: 0;
+  margin-left: 265px;
+  padding: 30px 40px;
+}
+.incomes-page,
+.modal-backdrop {
+  &,
+  * {
+    box-sizing: border-box;
+  }
+}
+.nav-item[aria-disabled='true'] {
+  opacity: 0.5;
+  pointer-events: none;
+}
+.page-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 20px;
+  margin-bottom: 25px;
+}
+.page-header h1 {
+  color: var(--gold-soft);
+  font-size: 28px;
+  font-weight: 700;
+  margin: 0 0 8px;
+}
+.page-header p {
+  color: var(--muted);
+  margin: 0;
+  font-size: 14px;
+}
+.metrics {
+  margin-bottom: 24px;
+}
+.metric-card,
+.filters,
+.table-container {
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: rgba(14, 13, 11, 0.95);
+}
+.metric-card {
+  padding: 22px;
+  max-width: 360px;
+}
+.metric-card span,
+.metric-card small {
+  display: block;
+  color: var(--muted);
+  font-size: 12px;
+}
+.metric-card strong {
+  display: block;
+  color: var(--ivory);
+  font-size: 28px;
+  margin: 8px 0;
+  font-variant-numeric: tabular-nums;
+}
+.filters {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 16px;
+  padding: 20px;
+  margin-bottom: 24px;
+}
+.filters mat-form-field {
+  flex: 1 1 180px;
+}
+mat-form-field {
+  min-width: 0;
+  width: 100%;
+}
+.filters {
+  @include mat.form-field-overrides(
+    (
+      subscript-text-line-height: 0px,
+    )
+  );
+}
+.gold-button {
+  background: linear-gradient(135deg, var(--gold), #997a15) !important;
+  color: var(--black) !important;
+  border-radius: 8px !important;
+  box-shadow: none !important;
+  font-size: 12px;
+}
+.gold-button:hover {
+  background: var(--gold-soft) !important;
+}
+.secondary-button {
+  color: var(--ivory) !important;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+}
+button:focus-visible,
+a:focus-visible,
+.table-scroll:focus-visible {
+  outline: 2px solid var(--gold-soft);
+  outline-offset: 3px;
+}
+.table-container {
+  overflow: hidden;
+}
+.table-scroll {
+  overflow-x: auto;
+}
+table {
+  width: 100%;
+  min-width: 760px;
+  border-collapse: collapse;
+}
+th,
+td {
+  padding: 16px;
+  text-align: left;
+  border-bottom: 1px solid rgba(245, 241, 232, 0.08);
+  font-size: 12px;
+}
+th {
+  color: var(--gold-soft);
+  background: rgba(201, 162, 75, 0.1);
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+}
+tbody tr:last-child td {
+  border-bottom: none;
+}
+tbody tr:hover {
+  background: rgba(201, 162, 75, 0.035);
+}
+.amount {
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+.category-indicator {
+  width: 30px;
+  height: 30px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  margin-right: 8px;
+  vertical-align: middle;
+}
+.category-indicator mat-icon {
+  color: white;
+  font-size: 18px;
+  width: 18px;
+  height: 18px;
+}
+.actions {
+  white-space: nowrap;
+}
+.actions button {
+  color: var(--gold-soft);
+}
+.actions .delete-button {
+  color: #f87171;
+}
+.empty {
+  padding: 32px 20px;
+  text-align: center;
+  color: var(--muted);
+}
+.pagination {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 16px;
+  padding: 16px;
+  border-top: 1px solid var(--line);
+  color: var(--muted);
+  font-size: 12px;
+}
+.pagination button {
+  color: var(--gold-soft);
+}
+.pagination button:disabled {
+  color: var(--muted);
+  opacity: 0.45;
+}
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  background: rgba(0, 0, 0, 0.72);
+  backdrop-filter: blur(4px);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
+}
+.income-modal {
+  width: min(700px, 100%);
+  max-height: 90vh;
+  overflow-y: auto;
+  background: var(--coal);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 26px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+}
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 24px;
+}
+.modal-header h2 {
+  font-size: 23px;
+  color: var(--ivory);
+}
+.modal-header button {
+  color: var(--muted);
+}
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 4px 16px;
+}
+.full-width {
+  grid-column: 1 / -1;
+}
+.modal-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 20px;
+}
+@media (max-width: 1200px) {
+  .incomes-page {
+    padding: 28px 24px;
+  }
+}
+@media (max-width: 850px) {
+  .dashboard-layout {
+    flex-direction: column;
+  }
+  .sidebar {
+    position: static;
+    width: 100%;
+    border-right: none;
+    border-bottom: 1px solid var(--line);
+  }
+  .sidebar-nav {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .sidebar-promo {
+    display: none;
+  }
+  .incomes-page {
+    margin-left: 0;
+  }
+}
+@media (max-width: 560px) {
+  .incomes-page {
+    padding: 24px 16px;
+  }
+  .metric-card {
+    max-width: none;
+  }
+  .filters {
+    padding: 16px;
+  }
+  .filters mat-form-field {
+    flex-basis: 100%;
+  }
+  .form-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .modal-backdrop {
+    padding: 12px;
+  }
+  .income-modal {
+    padding: 20px 16px;
+  }
+}
+.feedback { padding: 12px; border-radius: 8px; }
+.error { color: #ffb4ab; background: #432522; }
+
+/* Subtítulos del tema MoneyMind. */
+:host :is(h2, h3, h4, .page-header p, .modal-subtitle, .subtitle, .info-head p) { color: var(--gold-soft); }

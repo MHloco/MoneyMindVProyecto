@@ -1,0 +1,14 @@
+<div class="plans-grid">
+  <article class="plan-card" *ngFor="let plan of plans" [class.featured]="plan.code === 'PRO'">
+    <div class="plan-heading"><h3>{{ plan.name }}</h3><span *ngIf="currentPlan === plan.code" class="badge">Plan actual</span></div>
+    <p>{{ plan.description }}</p>
+    <div class="plan-price"><strong>{{ plan.price | currency:plan.currency:'symbol':'1.2-2' }}</strong><span> / {{ period(plan.billing_period) }}</span></div>
+    <ul>
+      <li>Presupuestos: <strong>{{ limit(plan.max_budgets) }}</strong></li>
+      <li>Obligaciones: <strong>{{ limit(plan.max_obligations) }}</strong></li>
+      <li>Consultas de IA por mes: <strong>{{ limit(plan.max_ai_queries) }}</strong></li>
+    </ul>
+    <small>Las funciones de IA están en desarrollo.</small>
+    <button type="button" [disabled]="busy || currentPlan === plan.code" (click)="choose.emit(plan)">{{ currentPlan === plan.code ? 'Plan actual' : publicView ? 'Empezar con ' + plan.name : 'Elegir ' + plan.name }}</button>
+  </article>
+</div>

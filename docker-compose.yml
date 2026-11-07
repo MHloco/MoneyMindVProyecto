@@ -1,0 +1,60 @@
+services:
+  web:
+    build: ./client
+    ports:
+      - "80:8080"
+    depends_on:
+      api:
+        condition: service_healthy
+    restart: unless-stopped
+    logging: &logs
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+  api:
+    build: ./api
+    environment:
+      NODE_ENV: production
+      PORT: "4000"
+      CLIENT_URL: ${CLIENT_URL:?Define CLIENT_URL}
+      DATABASE_URL: ${DATABASE_URL:?Define DATABASE_URL}
+      DB_SSL: ${DB_SSL:-true}
+      DB_SSL_CA_FILE: /app/certs/rds-global-bundle.pem
+      REDIS_URL: ${REDIS_URL:-redis://redis:6379}
+      JWT_ACCESS_SECRET: ${JWT_ACCESS_SECRET:?Define JWT_ACCESS_SECRET}
+      JWT_ACCESS_EXPIRES: ${JWT_ACCESS_EXPIRES:-15m}
+      AI_SERVICE_URL: http://agents:8000
+      AI_SERVICE_TOKEN: ${AI_SERVICE_TOKEN:?Define AI_SERVICE_TOKEN}
+      TRUST_PROXY_HOPS: ${TRUST_PROXY_HOPS:-2}
+      EMAIL_USER: ${EMAIL_USER:-}
+      EMAIL_PASS: ${EMAIL_PASS:-}
+    depends_on:
+      redis:
+        condition: service_healthy
+      agents:
+        condition: service_healthy
+    restart: unless-stopped
+    logging: *logs
+
+  agents:
+    build: ./ai-service
+    environment:
+      NODE_ENV: production
+      AI_SERVICE_TOKEN: ${AI_SERVICE_TOKEN:?Define AI_SERVICE_TOKEN}
+      GEMINI_API_KEY: ${GEMINI_API_KEY:-}
+      GEMINI_MODEL: ${GEMINI_MODEL:-gemini-3.5-flash-lite}
+    restart: unless-stopped
+    logging: *logs
+
+  redis:
+    image: redis:7.4-alpine
+    command: ["redis-server", "--save", "", "--appendonly", "no", "--maxmemory", "128mb", "--maxmemory-policy", "allkeys-lru"]
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+    restart: unless-stopped
+    logging: *logs

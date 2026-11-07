@@ -1,0 +1,97 @@
+<div class="auth-page">
+
+  <div class="auth-card">
+
+    <a routerLink="/" class="btn-back-home">
+      <svg viewBox="0 0 24 24" width="18" height="18" fill="none" aria-hidden="true" focusable="false">
+        <path d="M19 12H5m7-7-7 7 7 7" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" />
+      </svg>
+      <span>Volver al inicio</span>
+    </a>
+
+    <h1>
+      {{ adminMode ? 'Acceso de administrador' : (isRegistering ? 'Crear cuenta' : 'Iniciar sesión') }}
+    </h1>
+
+    <p class="auth-subtitle">
+      {{
+        adminMode ? 'Ingresa con tu cuenta de superusuario' : isRegistering
+          ? 'Crea tu cuenta para comenzar'
+          : 'Ingresa a tu cuenta'
+      }}
+    </p>
+
+    <form class="auth-form" (ngSubmit)="submit()">
+
+      <label class="field">
+        <span>Correo electrónico</span>
+        <input
+          id="email"
+          type="email"
+          autocomplete="username"
+          name="email"
+          [(ngModel)]="email"
+          placeholder="correo@ejemplo.com"
+          [disabled]="loading"
+        />
+      </label>
+
+      <label class="field">
+        <span>Contraseña</span>
+        <input
+          id="password"
+          type="password"
+          [attr.autocomplete]="isRegistering ? 'new-password' : 'current-password'"
+          name="password"
+          [(ngModel)]="password"
+          placeholder="••••••••"
+          [disabled]="loading"
+        />
+      </label>
+
+      <p *ngIf="errorMessage" class="auth-error" role="alert">
+        {{ errorMessage }}
+      </p>
+
+      <button
+        class="btn-submit"
+        type="submit"
+        [disabled]="loading"
+      >
+        {{
+          loading
+            ? 'Procesando...'
+            : (isRegistering
+                ? 'Crear cuenta'
+                : 'Iniciar sesión')
+        }}
+      </button>
+
+    </form>
+
+    <div class="auth-footer" *ngIf="!adminMode">
+      <span>
+        {{
+          isRegistering
+            ? '¿Ya tienes una cuenta?'
+            : '¿No tienes una cuenta?'
+        }}
+      </span>
+      <a href="javascript:void(0)" (click)="toggleMode()">
+        {{
+          isRegistering
+            ? 'Iniciar sesión'
+            : 'Registrarse'
+        }}
+      </a>
+    </div>
+
+    <p class="auth-footer">
+      <a [routerLink]="adminMode ? '/auth' : '/admin/login'">
+        {{ adminMode ? 'Volver al acceso de usuarios' : 'Acceso de administrador' }}
+      </a>
+    </p>
+
+  </div>
+
+</div>

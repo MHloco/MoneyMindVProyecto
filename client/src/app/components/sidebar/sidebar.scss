@@ -1,0 +1,10 @@
+@use '../../../styles/sidebar.scss';
+:host { display: contents; }
+.logout-button { margin: 22px 8px; padding: 12px; color: var(--gold-soft); background: transparent; border: 1px solid var(--line); border-radius: 8px; cursor: pointer; text-align: left; font: inherit; }
+.logout-button:hover { background: #c9a24b18; }
+.logout-button:focus-visible { outline: 2px solid var(--gold-soft); outline-offset: 3px; }
+@media (max-width: 850px) {
+  .sidebar { position: static; width: 100%; border-right: 0; border-bottom: 1px solid var(--line); }
+  .sidebar-nav { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .sidebar-promo { display: none; }
+}
